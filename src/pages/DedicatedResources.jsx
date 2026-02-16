@@ -262,6 +262,7 @@ export default function DedicatedResources() {
             <h1
               className="display-xl"
               style={{
+                color: '#fff',
                 fontWeight: 700,
                 letterSpacing: '-0.02em',
                 lineHeight: 1.08,

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  AlertTriangle,
   MapPin,
   Clock,
   Wrench,
@@ -18,8 +17,12 @@ import {
   Users,
   Monitor,
   Store,
+  Zap,
+  Shield,
+  Target,
+  AlertTriangle,
+  PhoneCall,
 } from 'lucide-react';
-import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import {
   fadeUp,
   fadeDown,
@@ -31,26 +34,105 @@ import {
 } from '../animation/variants';
 import { springSnappy, springGentle, springSmooth } from '../animation/springs';
 import CardTilt from '../components/CardTilt';
+import MagneticButton from '../components/MagneticButton';
+import GlowOrb from '../components/GlowOrb';
 import Breadcrumbs from '../components/Breadcrumbs';
 import SEOHead from '../components/SEOHead';
 
-/* ─── data ─── */
-const features = [
-  { icon: MapPin, title: '200+ Nationwide Field Technicians', desc: 'Vetted, experienced techs deployed from coast to coast. Local presence, national scale.' },
-  { icon: Clock, title: 'Emergency & Scheduled Support', desc: 'Same-day emergency dispatches and planned maintenance visits on your timeline.' },
-  { icon: Wrench, title: 'Hardware Troubleshooting & Replacement', desc: 'Printers, terminals, PCs, networking gear — diagnosed and resolved onsite.' },
-  { icon: Wifi, title: 'POS & WiFi Rollouts', desc: 'National buildouts, new store openings, and technology refresh programs executed at scale.' },
+/* --- data ------------------------------------------------ */
+
+const PAIN_POINTS = [
+  {
+    icon: AlertTriangle,
+    title: 'Broken hardware across 50 states',
+    desc: 'Receipt printers jam, terminals crash, and network switches die. Your centralized IT team cannot be everywhere at once.',
+  },
+  {
+    icon: Clock,
+    title: 'Vendors that take days, not hours',
+    desc: 'Generic IT companies triage your request behind a queue of other clients. Every hour waiting is revenue walking out the door.',
+  },
+  {
+    icon: PhoneCall,
+    title: 'Zero visibility once a tech is dispatched',
+    desc: 'You submit a ticket and hope for the best. No ETAs, no photos, no sign-off confirmation. Just radio silence until the next complaint.',
+  },
 ];
 
-const protocol = [
-  { num: '01', icon: UserCheck, title: 'Introduce to Store Management', desc: 'Technician arrives on-time, identifies themselves, and checks in with the on-duty manager.' },
-  { num: '02', icon: MessageSquare, title: 'Notify Help Desk', desc: 'Contacts SpecGravity help desk, receives detailed instructions and the statement of work.' },
-  { num: '03', icon: ClipboardCheck, title: 'Complete Work Per SOW', desc: 'Executes every task on the statement of work. No shortcuts, no skipped steps.' },
-  { num: '04', icon: Camera, title: 'Document With Photos & Notes', desc: 'Every repair, replacement, and configuration is photographed and logged in our ticketing system.' },
-  { num: '05', icon: ThumbsUp, title: 'Confirm Satisfaction', desc: 'Walks the store manager through the completed work and obtains sign-off before departing.' },
+const CAPABILITIES = [
+  {
+    icon: MapPin,
+    title: '200+ Nationwide Technicians',
+    desc: 'Vetted, background-checked field techs deployed from coast to coast. Local presence in every major metro and most rural markets.',
+  },
+  {
+    icon: Zap,
+    title: 'Same-Day Emergency Dispatch',
+    desc: 'Critical issue at 2 PM? A tech is onsite by close of business in metro areas. Next-business-day for non-critical and rural.',
+  },
+  {
+    icon: Wrench,
+    title: 'Hardware & Infrastructure',
+    desc: 'POS terminals, receipt printers, network switches, access points, PCs, digital signage — diagnosed and resolved onsite.',
+  },
+  {
+    icon: Wifi,
+    title: 'Rollouts & Refreshes',
+    desc: 'National POS rollouts, new store openings, technology refresh programs, and structured cabling projects executed at scale.',
+  },
+  {
+    icon: Shield,
+    title: 'SLA-Backed Resolution',
+    desc: 'Contractual response windows and resolution targets. 90%+ first-visit resolution rate across our entire network.',
+  },
+  {
+    icon: Target,
+    title: 'Your Ticketing System, Our Techs',
+    desc: 'We plug into ServiceNow, ConnectWise, Zendesk, or your existing platform. No parallel workflows. One source of truth.',
+  },
 ];
 
-const faqs = [
+const PROTOCOL = [
+  {
+    num: '01',
+    icon: UserCheck,
+    title: 'Check In With Management',
+    desc: 'Technician arrives on-time, identifies themselves, and confirms the scope of work with the on-duty manager.',
+  },
+  {
+    num: '02',
+    icon: MessageSquare,
+    title: 'Contact Help Desk',
+    desc: 'Connects with the SpecGravity help desk for detailed instructions, statement of work review, and any last-minute updates.',
+  },
+  {
+    num: '03',
+    icon: ClipboardCheck,
+    title: 'Execute the SOW',
+    desc: 'Completes every task on the statement of work. No shortcuts, no skipped steps, no improvising outside of scope.',
+  },
+  {
+    num: '04',
+    icon: Camera,
+    title: 'Document Everything',
+    desc: 'Every repair, replacement, and configuration is photographed and logged in our ticketing system with timestamps.',
+  },
+  {
+    num: '05',
+    icon: ThumbsUp,
+    title: 'Confirm & Sign Off',
+    desc: 'Walks the store manager through completed work and obtains sign-off before departing. No ambiguity, no callbacks.',
+  },
+];
+
+const STATS = [
+  { value: '200+', label: 'Field technicians nationwide' },
+  { value: '90%+', label: 'First-visit resolution rate' },
+  { value: '<4 hr', label: 'Metro emergency response' },
+  { value: '50', label: 'States covered' },
+];
+
+const FAQ_DATA = [
   {
     q: 'What is your average response time for emergency dispatches?',
     a: 'For critical issues, we target same-day dispatch within 4 hours in metro areas and next-business-day in rural markets. Non-emergency scheduled visits are confirmed within 24 hours of your request.',
@@ -74,16 +156,97 @@ const faqs = [
 ];
 
 const SIBLING_SOLUTIONS = [
-  { label: 'Hospitality', path: '/solutions/hospitality', icon: Monitor },
-  { label: 'Retail', path: '/solutions/retail', icon: Store },
-  { label: 'Office Tech Support', path: '/solutions/office-support', icon: Headphones },
-  { label: 'Dedicated Resources', path: '/solutions/dedicated-resources', icon: Users },
+  {
+    label: 'Hospitality',
+    path: '/solutions/hospitality',
+    icon: Monitor,
+    desc: '24/7 restaurant IT — POS, networking, and multi-unit rollouts.',
+  },
+  {
+    label: 'Retail',
+    path: '/solutions/retail',
+    icon: Store,
+    desc: 'POS, inventory systems, and PCI compliance for retail brands.',
+  },
+  {
+    label: 'Office Tech Support',
+    path: '/solutions/office-support',
+    icon: Headphones,
+    desc: 'Help desk, endpoint management, and network support for offices.',
+  },
+  {
+    label: 'Dedicated Resources',
+    path: '/solutions/dedicated-resources',
+    icon: Users,
+    desc: 'Embedded technicians and engineers assigned full-time to your team.',
+  },
 ];
 
-/* ─── component ─── */
+/* --- FAQ accordion --------------------------------------- */
+
+function FAQItem({ question, answer, isOpen, onToggle }) {
+  return (
+    <div style={{ borderBottom: '1px solid var(--border)' }}>
+      <button
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '100%',
+          padding: '24px 0',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          textAlign: 'left',
+          fontSize: 17,
+          fontWeight: 600,
+          color: 'var(--text-primary)',
+          lineHeight: 1.4,
+          gap: 16,
+        }}
+      >
+        {question}
+        <motion.span
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={springSnappy}
+          style={{ flexShrink: 0 }}
+        >
+          <ChevronDown size={20} />
+        </motion.span>
+      </button>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={springGentle}
+            style={{ overflow: 'hidden' }}
+          >
+            <p
+              style={{
+                fontSize: 15,
+                fontWeight: 500,
+                color: 'var(--text-muted)',
+                lineHeight: 1.7,
+                paddingBottom: 24,
+                maxWidth: 680,
+              }}
+            >
+              {answer}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* --- component ------------------------------------------- */
+
 export default function Dispatching() {
-  const [statRef, statVisible] = useScrollAnimation(0.3);
-  const [navRef, navVis] = useScrollAnimation(0.2);
   const [openFaq, setOpenFaq] = useState(null);
 
   return (
@@ -94,117 +257,154 @@ export default function Dispatching() {
         path="/solutions/nationwide-dispatching"
       />
 
-      {/* ── Breadcrumbs ── */}
-      <div
-        className="dot-pattern"
-        style={{
-          background: 'var(--dark-hero)',
-          padding: '20px 0 0',
-        }}
-      >
-        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ color: 'rgba(255,255,255,0.5)' }}>
-            <Breadcrumbs />
-          </div>
-        </div>
-      </div>
+      <GlowOrb size={500} color="rgba(37, 99, 235, 0.06)" />
 
-      {/* ── Section 1: Hero ── */}
+      {/* ======== 1. HERO ======== */}
       <section
         className="dot-pattern"
         style={{
           background: 'var(--dark-hero)',
           color: '#fff',
-          padding: '64px 0 100px',
+          padding: '20px 0 100px',
           overflow: 'hidden',
         }}
       >
         <div
           className="container"
-          style={{
-            position: 'relative',
-            zIndex: 1,
-            maxWidth: 900,
-            margin: '0 auto',
-            textAlign: 'center',
-          }}
+          style={{ position: 'relative', zIndex: 1 }}
         >
-          <motion.h1
-            className="display-xl"
-            variants={fadeDown}
-            initial="hidden"
-            animate="visible"
-            style={{
-              fontWeight: 700,
-              letterSpacing: '-0.02em',
-              lineHeight: 1.1,
-              marginBottom: 20,
-            }}
-          >
-            200+ Technicians.{' '}
-            <span
-              style={{
-                background: 'var(--text-gradient)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
-              Coast to Coast.
-            </span>
-          </motion.h1>
-
-          <motion.p
-            className="body-large"
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            style={{
-              color: 'rgba(255,255,255,0.65)',
-              maxWidth: 600,
-              margin: '0 auto 36px',
-              fontSize: 18,
-              fontWeight: 500,
-              lineHeight: 1.6,
-            }}
-          >
-            When your stores need hands-on support, we deploy fast.
-          </motion.p>
+          {/* Breadcrumbs inside hero */}
+          <div style={{ color: 'rgba(255,255,255,0.5)', marginBottom: 48 }}>
+            <Breadcrumbs />
+          </div>
 
           <motion.div
-            variants={scaleIn}
             initial="hidden"
             animate="visible"
+            variants={fadeLeft}
+            style={{ maxWidth: 720 }}
           >
-            <Link to="/contact" className="btn btn-primary-lg">
-              Get a Free Assessment
-            </Link>
+            <p
+              style={{
+                fontSize: 14,
+                fontWeight: 600,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                color: 'rgba(255,255,255,0.4)',
+                marginBottom: 16,
+              }}
+            >
+              Nationwide Dispatching
+            </p>
+            <h1
+              className="display-xl"
+              style={{
+                fontWeight: 700,
+                letterSpacing: '-0.02em',
+                lineHeight: 1.08,
+                marginBottom: 24,
+              }}
+            >
+              200+ Technicians.{' '}
+              <span className="gradient-text">Coast to Coast.</span>
+            </h1>
+            <p
+              style={{
+                fontSize: 18,
+                fontWeight: 500,
+                color: 'rgba(255,255,255,0.6)',
+                lineHeight: 1.65,
+                marginBottom: 40,
+                maxWidth: 560,
+              }}
+            >
+              When your stores need hands-on support, we deploy fast. Vetted
+              field techs dispatched same-day for emergencies, with
+              documentation and sign-off on every visit.
+            </p>
+            <MagneticButton>
+              <Link to="/contact" className="btn btn-primary-lg">
+                Get Your Dispatch Plan
+                <ArrowRight size={18} strokeWidth={2} />
+              </Link>
+            </MagneticButton>
           </motion.div>
         </div>
       </section>
 
-      {/* ── Section 2: The Challenge ── */}
-      <section className="section" style={{ background: 'var(--card-bg)' }}>
-        <div className="container" style={{ maxWidth: 800, margin: '0 auto' }}>
+      {/* ======== 2. THE CHALLENGE ======== */}
+      <section className="section">
+        <div className="container">
           <motion.div
-            variants={scaleIn}
+            className="section-header"
+            variants={fadeUp}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
-            style={{ textAlign: 'center' }}
           >
-            <AlertTriangle size={40} color="var(--primary)" strokeWidth={1.5} style={{ marginBottom: 20 }} />
-            <h2 style={{ marginBottom: 20 }}>The Challenge</h2>
-            <p style={{
-              fontSize: 16, lineHeight: 1.8, color: 'var(--text-muted)', maxWidth: 680, margin: '0 auto',
-            }}>
-              Centralized IT teams cannot cost-effectively resolve onsite issues across dozens — or hundreds — of locations. Broken receipt printers, damaged payment terminals, downed WiFi, and failing computers pile up while your store teams wait. Every hour of downtime is lost revenue and frustrated customers. You need boots on the ground, and you need them fast.
+            <h2>The Problem With Field Support</h2>
+            <p>
+              Centralized IT teams cannot cost-effectively resolve onsite issues
+              at scale.
             </p>
+          </motion.div>
+
+          <motion.div
+            className="grid-3"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.15 }}
+          >
+            {PAIN_POINTS.map(({ icon: Icon, title, desc }) => (
+              <motion.div
+                key={title}
+                variants={staggerItem}
+                className="card"
+                style={{ cursor: 'default' }}
+              >
+                <div
+                  style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 'var(--radius-md)',
+                    background: 'var(--accent-light)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 20,
+                  }}
+                >
+                  <Icon size={24} color="var(--accent)" strokeWidth={1.5} />
+                </div>
+                <h3
+                  style={{
+                    fontSize: 17,
+                    fontWeight: 700,
+                    color: 'var(--text-primary)',
+                    lineHeight: 1.3,
+                    marginBottom: 10,
+                  }}
+                >
+                  {title}
+                </h3>
+                <p
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 500,
+                    color: 'var(--text-muted)',
+                    lineHeight: 1.65,
+                  }}
+                >
+                  {desc}
+                </p>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </section>
 
-      {/* ── Section 3: Our Nationwide Network ── */}
+      {/* ======== 3. CAPABILITIES NETWORK ======== */}
       <section className="section section-alt">
         <div className="container">
           <motion.div
@@ -214,27 +414,43 @@ export default function Dispatching() {
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
-            <h2>Our Nationwide Network</h2>
-            <p>Scalable field support built for multi-unit brands</p>
+            <h2>Built for Multi-Unit Scale</h2>
+            <p>
+              A nationwide field network backed by process, documentation, and
+              SLA guarantees.
+            </p>
           </motion.div>
+
           <motion.div
-            className="grid-4"
-            style={{ maxWidth: 960, margin: '0 auto' }}
+            className="grid-3"
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.15 }}
           >
-            {features.map((feat) => (
-              <CardTilt key={feat.title}>
+            {CAPABILITIES.map(({ icon: Icon, title, desc }) => (
+              <CardTilt key={title}>
                 <motion.div
                   variants={staggerItem}
                   className="card"
-                  style={{ display: 'flex', flexDirection: 'column', gap: 14, height: '100%' }}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 14,
+                    height: '100%',
+                  }}
                 >
-                  <feat.icon size={28} color="var(--primary)" strokeWidth={2} />
-                  <h4 style={{ fontWeight: 700, fontSize: 17 }}>{feat.title}</h4>
-                  <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.6 }}>{feat.desc}</p>
+                  <Icon size={28} color="var(--accent)" strokeWidth={1.5} />
+                  <h4 style={{ fontWeight: 700, fontSize: 17 }}>{title}</h4>
+                  <p
+                    style={{
+                      color: 'var(--text-muted)',
+                      fontSize: 14,
+                      lineHeight: 1.65,
+                    }}
+                  >
+                    {desc}
+                  </p>
                 </motion.div>
               </CardTilt>
             ))}
@@ -242,134 +458,183 @@ export default function Dispatching() {
         </div>
       </section>
 
-      {/* ── Section 4: 5-Point Technician Protocol ── */}
+      {/* ======== 4. 5-POINT PROTOCOL ======== */}
       <section className="section" style={{ background: 'var(--card-bg)' }}>
         <div className="container">
           <motion.div
             className="section-header"
-            variants={fadeRight}
+            variants={fadeDown}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
             <h2>Our 5-Point Technician Protocol</h2>
-            <p>Every dispatch follows the same rigorous standard</p>
+            <p>Every dispatch follows the same rigorous standard.</p>
           </motion.div>
 
-          <div style={{ maxWidth: 640, margin: '0 auto', position: 'relative' }}>
-            {/* Vertical connector line */}
-            <div style={{
-              position: 'absolute',
-              left: 28,
-              top: 40,
-              bottom: 40,
-              width: 0,
-              borderLeft: '2px dashed var(--border)',
-              pointerEvents: 'none',
-              zIndex: 0,
-            }} />
+          <motion.div
+            style={{
+              position: 'relative',
+              maxWidth: 640,
+              margin: '0 auto',
+            }}
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+          >
+            {/* Vertical connector */}
+            <div
+              style={{
+                position: 'absolute',
+                left: 23,
+                top: 0,
+                bottom: 0,
+                width: 2,
+                background:
+                  'linear-gradient(180deg, var(--accent) 0%, var(--border) 100%)',
+                pointerEvents: 'none',
+                zIndex: 0,
+              }}
+            />
 
-            {protocol.map((step, i) => (
+            {PROTOCOL.map((step, i) => (
               <motion.div
                 key={step.num}
-                variants={fadeLeft}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.3 }}
+                variants={staggerItem}
                 style={{
                   display: 'flex',
                   gap: 24,
                   alignItems: 'flex-start',
                   position: 'relative',
                   zIndex: 1,
-                  marginBottom: i < protocol.length - 1 ? 40 : 0,
+                  paddingBottom: i < PROTOCOL.length - 1 ? 40 : 0,
                 }}
               >
                 {/* Number circle */}
-                <div style={{
-                  flexShrink: 0,
-                  width: 56,
-                  height: 56,
-                  borderRadius: '50%',
-                  background: 'var(--alt-bg)',
-                  border: '2px solid var(--border)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontWeight: 700,
-                  fontSize: 18,
-                  color: 'var(--primary)',
-                }}>
+                <div
+                  style={{
+                    flexShrink: 0,
+                    width: 48,
+                    height: 48,
+                    borderRadius: '50%',
+                    background: 'var(--accent)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 700,
+                    fontSize: 16,
+                    color: '#fff',
+                    boxShadow: 'var(--accent-glow)',
+                  }}
+                >
                   {step.num}
                 </div>
 
                 {/* Content */}
-                <div style={{ flex: 1, paddingTop: 4 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                    <step.icon size={20} color="var(--primary)" strokeWidth={2} />
-                    <h4 style={{ fontWeight: 700, fontSize: 17 }}>{step.title}</h4>
+                <div style={{ flex: 1, paddingTop: 2 }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 10,
+                      marginBottom: 8,
+                    }}
+                  >
+                    <step.icon
+                      size={20}
+                      color="var(--accent)"
+                      strokeWidth={2}
+                    />
+                    <h4 style={{ fontWeight: 700, fontSize: 17 }}>
+                      {step.title}
+                    </h4>
                   </div>
-                  <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.6 }}>{step.desc}</p>
+                  <p
+                    style={{
+                      color: 'var(--text-muted)',
+                      fontSize: 15,
+                      lineHeight: 1.65,
+                    }}
+                  >
+                    {step.desc}
+                  </p>
                 </div>
               </motion.div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Section 5: Key Stat Callout (light) ── */}
-      <section className="section section-alt">
-        <div className="container">
-          <motion.div
-            ref={statRef}
-            variants={scaleIn}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-            style={{
-              maxWidth: 640,
-              margin: '0 auto',
-              textAlign: 'center',
-              background: 'var(--card-bg)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-lg)',
-              padding: 'clamp(40px, 5vw, 64px)',
-              boxShadow: 'var(--shadow-lg)',
-            }}
-          >
-            <div style={{
-              fontWeight: 700,
-              fontSize: 'clamp(48px, 6vw, 72px)',
-              color: 'var(--primary)',
-              lineHeight: 1.1,
-              marginBottom: 16,
-            }}>
-              90%+
-            </div>
-            <p style={{
-              color: 'var(--text-muted)',
-              fontSize: 18,
-              lineHeight: 1.6,
-              maxWidth: 460,
-              margin: '0 auto 8px',
-            }}>
-              First-visit resolution rate across all dispatches
-            </p>
-            <p style={{
-              color: 'var(--text-muted)',
-              fontSize: 14,
-              lineHeight: 1.5,
-              maxWidth: 400,
-              margin: '0 auto',
-              fontStyle: 'italic',
-            }}>
-              Based on SLA performance data across our nationwide technician network
-            </p>
           </motion.div>
         </div>
       </section>
 
-      {/* ── Section 6: FAQ ── */}
+      {/* ======== 5. PROOF — Stats Row ======== */}
+      <section className="section section-alt">
+        <div className="container">
+          <motion.div
+            className="section-header"
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+          >
+            <h2>The Numbers Speak</h2>
+          </motion.div>
+
+          <motion.div
+            className="dispatch-stats-grid"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: 24,
+              maxWidth: 800,
+              margin: '0 auto',
+            }}
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            {STATS.map(({ value, label }) => (
+              <CardTilt key={label} maxTilt={5}>
+                <motion.div
+                  variants={staggerItem}
+                  style={{
+                    textAlign: 'center',
+                    background: 'var(--card-bg)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-lg)',
+                    padding: 'clamp(28px, 4vw, 44px) 20px',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: 'clamp(36px, 5vw, 52px)',
+                      fontWeight: 800,
+                      letterSpacing: '-0.03em',
+                      color: 'var(--accent)',
+                      lineHeight: 1,
+                      marginBottom: 8,
+                    }}
+                  >
+                    {value}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 500,
+                      color: 'var(--text-muted)',
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    {label}
+                  </div>
+                </motion.div>
+              </CardTilt>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ======== 6. FAQ ======== */}
       <section className="section" style={{ background: 'var(--card-bg)' }}>
         <div className="container">
           <motion.div
@@ -380,135 +645,113 @@ export default function Dispatching() {
             viewport={{ once: true, amount: 0.3 }}
           >
             <h2>Frequently Asked Questions</h2>
-            <p>What clients ask before getting started</p>
+            <p>What multi-unit operators ask before getting started.</p>
           </motion.div>
 
-          <div style={{ maxWidth: 720, margin: '0 auto' }}>
-            {faqs.map((faq, i) => (
-              <motion.div
-                key={i}
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.2 }}
-                style={{
-                  borderBottom: '1px solid var(--border)',
-                }}
-              >
-                <button
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: 16,
-                    padding: '20px 0',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    fontFamily: 'var(--font-heading)',
-                    fontWeight: 600,
-                    fontSize: 16,
-                    color: 'var(--primary)',
-                  }}
-                >
-                  {faq.q}
-                  <motion.span
-                    animate={{ rotate: openFaq === i ? 180 : 0 }}
-                    transition={springSnappy}
-                    style={{ flexShrink: 0 }}
-                  >
-                    <ChevronDown size={20} strokeWidth={2} />
-                  </motion.span>
-                </button>
-                <AnimatePresence initial={false}>
-                  {openFaq === i && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={springGentle}
-                      style={{ overflow: 'hidden' }}
-                    >
-                      <p style={{
-                        fontSize: 15,
-                        lineHeight: 1.7,
-                        color: 'var(--text-muted)',
-                        paddingBottom: 20,
-                      }}>
-                        {faq.a}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+          <motion.div
+            style={{ maxWidth: 720, margin: '0 auto' }}
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+          >
+            {FAQ_DATA.map((item, i) => (
+              <motion.div key={i} variants={staggerItem}>
+                <FAQItem
+                  question={item.q}
+                  answer={item.a}
+                  isOpen={openFaq === i}
+                  onToggle={() => setOpenFaq(openFaq === i ? null : i)}
+                />
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* ── Section 7: CTA ── */}
+      {/* ======== 7. CTA ======== */}
       <section
-        className="dot-pattern"
+        className="section dot-pattern"
         style={{
           background: 'var(--dark-hero)',
-          padding: 'clamp(48px, 6vw, 80px) 0 clamp(64px, 8vw, 96px)',
-          borderTop: '1px solid rgba(255,255,255,0.05)',
-          overflow: 'hidden',
+          color: '#fff',
         }}
       >
-        <div className="container" style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+        <div
+          className="container"
+          style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}
+        >
           <motion.h2
             className="display-lg"
+            style={{
+              fontWeight: 700,
+              letterSpacing: '-0.02em',
+              lineHeight: 1.1,
+              color: '#fff',
+              marginBottom: 16,
+            }}
             variants={fadeUp}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-            style={{ color: '#fff', marginBottom: 20 }}
+            viewport={{ once: true, amount: 0.5 }}
           >
             Reduce Downtime. Deploy Fast.
           </motion.h2>
           <motion.p
+            style={{
+              fontSize: 17,
+              fontWeight: 500,
+              color: 'rgba(255,255,255,0.5)',
+              lineHeight: 1.6,
+              marginBottom: 36,
+              maxWidth: 520,
+              margin: '0 auto 36px',
+            }}
             variants={fadeUp}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-            style={{ color: 'rgba(255,255,255,0.7)', fontSize: 18, maxWidth: 560, margin: '0 auto 36px', lineHeight: 1.6 }}
+            viewport={{ once: true, amount: 0.5 }}
           >
-            Tell us how many locations you need covered. We will build a dispatch plan in 48 hours.
+            Tell us how many locations you need covered. We will build a custom
+            dispatch plan in 48 hours.
           </motion.p>
           <motion.div
             variants={scaleIn}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
+            viewport={{ once: true, amount: 0.5 }}
           >
-            <Link to="/contact" className="btn btn-primary-lg">Get Your Dispatch Plan</Link>
+            <MagneticButton>
+              <Link to="/contact" className="btn btn-primary-lg">
+                Get Your Dispatch Plan
+                <ArrowRight size={18} strokeWidth={2} />
+              </Link>
+            </MagneticButton>
           </motion.div>
         </div>
       </section>
 
-      {/* ── Section 8: Cross-Navigation ── */}
-      <section className="section" ref={navRef} style={{ background: 'var(--card-bg)' }}>
+      {/* ======== 8. CROSS-NAVIGATION ======== */}
+      <section className="section" style={{ background: 'var(--card-bg)' }}>
         <div className="container">
           <motion.div
             className="section-header"
-            initial="hidden"
-            animate={navVis ? 'visible' : 'hidden'}
             variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
           >
             <h2>Explore Other Solutions</h2>
           </motion.div>
 
           <motion.div
             className="grid-4"
-            initial="hidden"
-            animate={navVis ? 'visible' : 'hidden'}
             variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.15 }}
           >
-            {SIBLING_SOLUTIONS.map(({ label, path, icon: Icon }) => (
+            {SIBLING_SOLUTIONS.map(({ label, path, icon: Icon, desc }) => (
               <motion.div key={path} variants={staggerItem}>
                 <Link
                   to={path}
@@ -516,27 +759,36 @@ export default function Dispatching() {
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'center',
                     gap: 12,
-                    textAlign: 'center',
                     textDecoration: 'none',
                     padding: 28,
                   }}
                 >
-                  <Icon size={28} color="var(--primary)" strokeWidth={1.5} />
+                  <Icon size={24} color="var(--accent)" strokeWidth={1.5} />
                   <span
                     style={{
-                      fontSize: 15,
+                      fontSize: 16,
                       fontWeight: 600,
                       color: 'var(--text-primary)',
                     }}
                   >
                     {label}
                   </span>
+                  <span
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 500,
+                      color: 'var(--text-muted)',
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    {desc}
+                  </span>
                   <ArrowRight
                     size={16}
                     color="var(--text-muted)"
                     strokeWidth={2}
+                    style={{ marginTop: 'auto' }}
                   />
                 </Link>
               </motion.div>
@@ -544,6 +796,15 @@ export default function Dispatching() {
           </motion.div>
         </div>
       </section>
+
+      {/* Responsive overrides */}
+      <style>{`
+        @media (min-width: 768px) {
+          .dispatch-stats-grid {
+            grid-template-columns: repeat(4, 1fr) !important;
+          }
+        }
+      `}</style>
     </>
   );
 }

@@ -4,9 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Clock,
   DollarSign,
-  MapPin,
   MessageCircle,
-  Plug,
   Eye,
   CheckCircle,
   ChevronDown,
@@ -36,41 +34,49 @@ import { springGentle, springSnappy } from '../animation/springs';
 import Breadcrumbs from '../components/Breadcrumbs';
 import SEOHead from '../components/SEOHead';
 import CardTilt from '../components/CardTilt';
+import MagneticButton from '../components/MagneticButton';
+import GlowOrb from '../components/GlowOrb';
 
 /* ── Data ── */
+
 const PAIN_POINTS = [
-  'Your team submits tickets into a void and waits days for a response',
-  'Every invoice is a surprise — per-ticket billing with no ceiling',
-  'Onsite issues require calling three vendors before someone shows up',
-  'No one owns the full picture: network, endpoints, cloud, and security are siloed',
+  {
+    icon: AlertTriangle,
+    title: 'Tickets Disappear Into a Void',
+    desc: 'Your team submits a request and waits days for a response. Nobody owns the problem.',
+  },
+  {
+    icon: DollarSign,
+    title: 'Surprise Invoices Every Month',
+    desc: 'Per-ticket billing with no ceiling. You can\'t budget what you can\'t predict.',
+  },
+  {
+    icon: Clock,
+    title: 'Three Vendors, Zero Accountability',
+    desc: 'Network, endpoints, cloud, and security are siloed across vendors who point fingers at each other.',
+  },
 ];
 
 const FEATURES = [
-  { icon: Clock, title: '24/7/365 Availability', desc: 'Round-the-clock support that never takes a day off. Nights, weekends, holidays — we answer.' },
-  { icon: DollarSign, title: 'Unlimited Support, Flat Rate', desc: 'One predictable cost per machine per month. No surprise invoices, no per-ticket fees.' },
-  { icon: MapPin, title: 'US-Based Technicians', desc: 'Local support teams across New York, New Jersey, and Pennsylvania for onsite needs.' },
-  { icon: MessageCircle, title: 'Call, Text, Chat, Email', desc: 'Reach us however your team prefers. Every channel connects to the same expert team.' },
-  { icon: Plug, title: 'Standalone or Integrated', desc: 'Works as your complete IT department or plugs seamlessly into your existing infrastructure.' },
+  { icon: Headphones, title: 'Help Desk (Tier 1-3)', desc: 'Dedicated queue for your team with average first-response under 8 minutes. No issue too small or too complex.' },
   { icon: Eye, title: 'Proactive Monitoring', desc: 'We catch issues before your team does. Automated alerts and real-time system health dashboards.' },
-  { icon: Monitor, title: 'Workstations & Laptops', desc: 'Setup, imaging, troubleshooting, and lifecycle management for every endpoint.' },
+  { icon: Monitor, title: 'Endpoint Management', desc: 'Setup, imaging, troubleshooting, and lifecycle management for every workstation and laptop.' },
   { icon: Wifi, title: 'Network & Connectivity', desc: 'Router, switch, and access point management. Wi-Fi optimization, VPN configuration, and ISP liaison.' },
   { icon: ShieldCheck, title: 'Security & Compliance', desc: 'Antivirus deployment, patch management, firewall rules, and compliance reporting.' },
   { icon: Server, title: 'Server & Cloud', desc: 'On-premise server monitoring, cloud workspace administration (M365, Google Workspace), and backup verification.' },
-  { icon: Headphones, title: 'Help Desk (Tier 1–3)', desc: 'Dedicated queue for your team with average first-response under 8 minutes.' },
-  { icon: DollarSign, title: 'Procurement & Licensing', desc: 'Hardware sourcing, software license management, and vendor negotiation at volume pricing.' },
 ];
 
 const HOW_IT_WORKS = [
-  { num: '01', title: 'Onboarding Audit', desc: 'We document every device, account, vendor, and network node in your office. No guesswork.' },
-  { num: '02', title: 'Support Activation', desc: 'Your team gets dedicated phone, email, and chat lines. Monitoring agents are deployed silently.' },
-  { num: '03', title: 'Ongoing Management', desc: 'Proactive patching, automated alerts, and weekly health reports keep your systems ahead of problems.' },
-  { num: '04', title: 'Strategic Reviews', desc: 'Monthly or quarterly check-ins with your account manager to plan upgrades, budget, and roadmap.' },
+  { num: '01', title: 'Onboarding Audit', desc: 'We document every device, account, vendor, and network node. No guesswork.' },
+  { num: '02', title: 'Support Activation', desc: 'Your team gets dedicated phone, email, and chat lines. Monitoring agents deploy silently.' },
+  { num: '03', title: 'Ongoing Management', desc: 'Proactive patching, automated alerts, and weekly health reports keep you ahead of problems.' },
+  { num: '04', title: 'Strategic Reviews', desc: 'Monthly check-ins with your account manager to plan upgrades, budget, and roadmap.' },
 ];
 
 const FAQ_DATA = [
   {
     q: 'What does the help desk cover?',
-    a: 'Our help desk handles everything from password resets and email issues to printer connectivity, software installations, VPN troubleshooting, and multi-monitor setups. Tier 1–3 support is included — no issue is too small or too complex.',
+    a: 'Our help desk handles everything from password resets and email issues to printer connectivity, software installations, VPN troubleshooting, and multi-monitor setups. Tier 1-3 support is included — no issue is too small or too complex.',
   },
   {
     q: 'Can you support remote and hybrid employees?',
@@ -82,7 +88,7 @@ const FAQ_DATA = [
   },
   {
     q: 'Can you procure hardware and manage licenses for us?',
-    a: 'We handle end-to-end procurement: laptops, monitors, docking stations, networking gear, and peripherals. We also manage software licensing for Microsoft 365, Google Workspace, Adobe, and any line-of-business applications your team uses.',
+    a: 'We handle end-to-end procurement: laptops, monitors, docking stations, networking gear, and peripherals. We also manage software licensing for Microsoft 365, Google Workspace, Adobe, and any line-of-business applications.',
   },
   {
     q: 'How do you handle network management and security?',
@@ -120,6 +126,7 @@ const SIBLING_SOLUTIONS = [
 ];
 
 /* ── FAQ Accordion Item ── */
+
 function FAQItem({ question, answer, isOpen, onToggle }) {
   return (
     <div style={{ borderBottom: '1px solid var(--border)' }}>
@@ -136,7 +143,6 @@ function FAQItem({ question, answer, isOpen, onToggle }) {
           border: 'none',
           cursor: 'pointer',
           textAlign: 'left',
-          fontFamily: "'Inter', sans-serif",
           fontSize: 17,
           fontWeight: 600,
           color: 'var(--text-primary)',
@@ -164,7 +170,6 @@ function FAQItem({ question, answer, isOpen, onToggle }) {
           >
             <p
               style={{
-                fontFamily: "'Inter', sans-serif",
                 fontSize: 15,
                 fontWeight: 500,
                 color: 'var(--text-muted)',
@@ -183,6 +188,7 @@ function FAQItem({ question, answer, isOpen, onToggle }) {
 }
 
 /* ── Component ── */
+
 export default function OfficeSupport() {
   const [openFaq, setOpenFaq] = useState(null);
 
@@ -194,31 +200,28 @@ export default function OfficeSupport() {
         path="/solutions/office-support"
       />
 
-      {/* ════════ BREADCRUMBS ════════ */}
-      <div
-        className="dot-pattern"
-        style={{
-          background: 'var(--dark-hero)',
-          padding: '20px 0 0',
-        }}
-      >
-        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ color: 'rgba(255,255,255,0.5)' }}>
-            <Breadcrumbs />
-          </div>
-        </div>
-      </div>
-
       {/* ════════ 1. HERO ════════ */}
       <section
         className="dot-pattern"
         style={{
-          background: 'var(--dark-hero)',
-          color: '#fff',
-          padding: '64px 0 100px',
+          position: 'relative',
           overflow: 'hidden',
+          background: 'var(--dark-hero)',
+          padding: 'clamp(120px, 12vw, 160px) 0 clamp(64px, 8vw, 96px)',
         }}
       >
+        <div
+          style={{
+            position: 'absolute',
+            top: '-20%',
+            left: '-10%',
+            width: 600,
+            height: 600,
+            background: 'radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%)',
+            pointerEvents: 'none',
+          }}
+        />
+
         <div
           className="container"
           style={{
@@ -229,39 +232,68 @@ export default function OfficeSupport() {
             margin: '0 auto',
           }}
         >
-          <motion.div
+          <div style={{ marginBottom: 32 }}>
+            <Breadcrumbs />
+          </div>
+
+          <motion.p
+            style={{
+              fontSize: 13,
+              fontWeight: 600,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              color: 'rgba(255,255,255,0.4)',
+              marginBottom: 16,
+            }}
             initial="hidden"
             animate="visible"
-            variants={staggerContainer}
+            variants={fadeUp}
           >
-            <motion.h1
-              className="display-xl"
-              variants={fadeDown}
-              style={{ color: '#fff', marginBottom: 24 }}
-            >
-              Flat-Rate IT for Your{' '}
-              <span className="gradient-text">Headquarters</span>
-            </motion.h1>
+            Office IT Support
+          </motion.p>
 
-            <motion.p
-              className="body-large"
-              variants={fadeUp}
+          <motion.h1
+            className="display-xl"
+            initial="hidden"
+            animate="visible"
+            variants={fadeDown}
+            style={{ color: '#fff', marginBottom: 24 }}
+          >
+            Flat-Rate IT for Your{' '}
+            <span
               style={{
-                color: 'rgba(255,255,255,0.7)',
-                maxWidth: 640,
-                margin: '0 auto 32px',
-                lineHeight: 1.6,
+                background: 'linear-gradient(135deg, #2563EB 0%, #60A5FA 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
               }}
             >
-              Unlimited support for your corporate team. One partner.
-              Every device. Zero surprises.
-            </motion.p>
+              Headquarters
+            </span>
+          </motion.h1>
 
-            <motion.div variants={scaleIn}>
+          <motion.p
+            className="body-large"
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            style={{
+              color: 'rgba(255,255,255,0.7)',
+              maxWidth: 640,
+              margin: '0 auto 36px',
+              lineHeight: 1.6,
+            }}
+          >
+            Unlimited support for your corporate team. One partner.
+            Every device. Zero surprises.
+          </motion.p>
+
+          <motion.div initial="hidden" animate="visible" variants={scaleIn}>
+            <MagneticButton>
               <Link to="/contact" className="btn btn-primary-lg">
                 Get a Custom Quote
               </Link>
-            </motion.div>
+            </MagneticButton>
           </motion.div>
         </div>
       </section>
@@ -269,88 +301,93 @@ export default function OfficeSupport() {
       {/* ════════ 2. PROBLEM AGITATION ════════ */}
       <section className="section">
         <div className="container">
-          <div style={{ maxWidth: 720, margin: '0 auto' }}>
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeRight}
-            >
-              <h2 style={{ marginBottom: 28 }}>
-                Office IT Shouldn't Feel Like This
-              </h2>
-            </motion.div>
-            <motion.div
-              style={{ display: 'flex', flexDirection: 'column', gap: 20 }}
-              variants={staggerContainer}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-            >
-              {PAIN_POINTS.map((pt, i) => (
-                <motion.div
-                  key={i}
-                  style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}
-                  variants={staggerItem}
+          <motion.div
+            className="section-header"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={fadeUp}
+          >
+            <h2>Office IT Shouldn't Feel Like This</h2>
+            <p>If any of these sound familiar, there's a better way.</p>
+          </motion.div>
+
+          <motion.div
+            className="grid-3"
+            style={{ maxWidth: 1040, margin: '0 auto' }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={staggerContainer}
+          >
+            {PAIN_POINTS.map(({ icon: Icon, title, desc }) => (
+              <motion.div
+                key={title}
+                variants={staggerItem}
+                className="card"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 14,
+                  borderLeft: '3px solid var(--accent)',
+                  cursor: 'default',
+                }}
+              >
+                <div
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: 10,
+                    background: 'var(--accent-light)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
                 >
-                  <AlertTriangle
-                    size={22}
-                    style={{ flexShrink: 0, color: 'var(--text-muted)', marginTop: 2 }}
-                  />
-                  <span
-                    style={{
-                      fontSize: 16,
-                      fontWeight: 500,
-                      color: 'var(--text-primary)',
-                      lineHeight: 1.6,
-                    }}
-                  >
-                    {pt}
-                  </span>
-                </motion.div>
-              ))}
-            </motion.div>
-            <motion.p
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-              style={{
-                color: 'var(--text-muted)',
-                fontSize: 15,
-                lineHeight: 1.6,
-                marginTop: 28,
-              }}
-            >
-              We replace that chaos with a single, flat-rate partnership that covers every
-              device, every user, every day.
-            </motion.p>
-          </div>
+                  <Icon size={20} color="var(--accent)" strokeWidth={2} />
+                </div>
+                <h4 style={{ fontWeight: 700, fontSize: 17 }}>{title}</h4>
+                <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.65 }}>
+                  {desc}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          <motion.p
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            style={{
+              color: 'var(--text-muted)',
+              fontSize: 15,
+              lineHeight: 1.6,
+              marginTop: 36,
+              textAlign: 'center',
+              maxWidth: 640,
+              margin: '36px auto 0',
+            }}
+          >
+            We replace that chaos with a single, flat-rate partnership that covers every
+            device, every user, every day.
+          </motion.p>
         </div>
       </section>
 
-      {/* ════════ 3. COMPLETE OFFICE IT — merged features + scope ════════ */}
+      {/* ════════ 3. EVERYTHING YOUR OFFICE NEEDS ════════ */}
       <section className="section section-alt">
         <div className="container">
-          <div className="section-header">
-            <motion.h2
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeDown}
-            >
-              Everything Your Office Needs
-            </motion.h2>
-            <motion.p
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-            >
-              From endpoints to infrastructure, every layer of your
-              office technology is covered
-            </motion.p>
-          </div>
+          <motion.div
+            className="section-header"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={fadeDown}
+          >
+            <h2>Everything Your Office Needs</h2>
+            <p>From endpoints to infrastructure, every layer covered</p>
+          </motion.div>
 
           <motion.div
             className="grid-3"
@@ -379,7 +416,7 @@ export default function OfficeSupport() {
                       width: 44,
                       height: 44,
                       borderRadius: '50%',
-                      background: 'var(--primary)',
+                      background: 'var(--accent)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -388,16 +425,8 @@ export default function OfficeSupport() {
                   >
                     <feat.icon size={22} color="#fff" strokeWidth={2} />
                   </div>
-                  <h4 style={{ fontWeight: 700, fontSize: 17 }}>
-                    {feat.title}
-                  </h4>
-                  <p
-                    style={{
-                      color: 'var(--text-muted)',
-                      fontSize: 14,
-                      lineHeight: 1.65,
-                    }}
-                  >
+                  <h4 style={{ fontWeight: 700, fontSize: 17 }}>{feat.title}</h4>
+                  <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.65 }}>
                     {feat.desc}
                   </p>
                 </motion.div>
@@ -410,26 +439,25 @@ export default function OfficeSupport() {
       {/* ════════ 4. HOW IT WORKS ════════ */}
       <section className="section" style={{ background: 'var(--card-bg)' }}>
         <div className="container">
-          <div className="section-header">
-            <motion.h2
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={scaleIn}
-            >
-              How It Works
-            </motion.h2>
-            <motion.p
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-            >
-              Four steps from first call to fully managed office
-            </motion.p>
-          </div>
+          <motion.div
+            className="section-header"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={fadeUp}
+          >
+            <h2>How It Works</h2>
+            <p>Four steps from first call to fully managed office</p>
+          </motion.div>
 
           <motion.div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr',
+              gap: 24,
+              maxWidth: 900,
+              margin: '0 auto',
+            }}
             className="os-steps-grid"
             initial="hidden"
             whileInView="visible"
@@ -441,7 +469,7 @@ export default function OfficeSupport() {
                 key={step.num}
                 variants={i % 2 === 0 ? fadeLeft : fadeRight}
                 style={{
-                  background: 'var(--card-bg)',
+                  background: 'var(--alt-bg)',
                   border: '1px solid var(--border)',
                   borderRadius: 16,
                   padding: 32,
@@ -451,7 +479,7 @@ export default function OfficeSupport() {
                   style={{
                     fontSize: 48,
                     fontWeight: 700,
-                    color: 'rgba(0,0,0,0.06)',
+                    color: 'var(--border)',
                     lineHeight: 1,
                     letterSpacing: '-0.02em',
                     display: 'block',
@@ -470,13 +498,7 @@ export default function OfficeSupport() {
                 >
                   {step.title}
                 </h4>
-                <p
-                  style={{
-                    fontSize: 15,
-                    lineHeight: 1.65,
-                    color: 'var(--text-muted)',
-                  }}
-                >
+                <p style={{ fontSize: 15, lineHeight: 1.65, color: 'var(--text-muted)' }}>
                   {step.desc}
                 </p>
               </motion.div>
@@ -494,27 +516,19 @@ export default function OfficeSupport() {
         }}
       >
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-          <div className="section-header" style={{ marginBottom: 48 }}>
-            <motion.h2
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeDown}
-              style={{ color: '#fff' }}
-            >
-              Flexible Support Tiers
-            </motion.h2>
-            <motion.p
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-              style={{ color: 'rgba(255,255,255,0.6)' }}
-            >
-              Transparent pricing. No contracts. Scale up or down as
-              your team changes.
-            </motion.p>
-          </div>
+          <motion.div
+            className="section-header"
+            style={{ marginBottom: 48 }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={fadeDown}
+          >
+            <h2 style={{ color: '#fff' }}>Flexible Support Tiers</h2>
+            <p style={{ color: 'rgba(255,255,255,0.6)' }}>
+              Transparent pricing. No contracts. Scale up or down as your team changes.
+            </p>
+          </motion.div>
 
           <motion.div
             className="os-tiers-grid"
@@ -529,10 +543,10 @@ export default function OfficeSupport() {
                 variants={staggerItem}
                 style={{
                   background: tier.highlighted
-                    ? 'var(--primary)'
+                    ? 'var(--accent)'
                     : 'var(--card-bg)',
                   border: tier.highlighted
-                    ? '1px solid var(--primary-hover)'
+                    ? '1px solid var(--accent-hover)'
                     : '1px solid var(--border)',
                   borderRadius: 20,
                   padding: '36px 28px',
@@ -540,7 +554,7 @@ export default function OfficeSupport() {
                   display: 'flex',
                   flexDirection: 'column',
                   ...(tier.highlighted
-                    ? { boxShadow: '0 0 40px rgba(255,255,255,0.08)' }
+                    ? { boxShadow: '0 0 40px rgba(37, 99, 235, 0.2)' }
                     : {}),
                 }}
               >
@@ -551,8 +565,8 @@ export default function OfficeSupport() {
                       top: -12,
                       left: '50%',
                       transform: 'translateX(-50%)',
-                      background: 'var(--card-bg)',
-                      color: 'var(--primary)',
+                      background: '#fff',
+                      color: 'var(--accent)',
                       fontSize: 12,
                       fontWeight: 700,
                       padding: '4px 16px',
@@ -569,9 +583,7 @@ export default function OfficeSupport() {
                   style={{
                     fontWeight: 700,
                     fontSize: 22,
-                    color: tier.highlighted
-                      ? '#fff'
-                      : 'var(--text-primary)',
+                    color: tier.highlighted ? '#fff' : 'var(--text-primary)',
                     marginBottom: 8,
                   }}
                 >
@@ -582,9 +594,7 @@ export default function OfficeSupport() {
                     style={{
                       fontWeight: 700,
                       fontSize: 36,
-                      color: tier.highlighted
-                        ? '#fff'
-                        : 'var(--text-primary)',
+                      color: tier.highlighted ? '#fff' : 'var(--text-primary)',
                       letterSpacing: '-0.02em',
                     }}
                   >
@@ -625,12 +635,12 @@ export default function OfficeSupport() {
                         lineHeight: 1.5,
                         color: tier.highlighted
                           ? 'rgba(255,255,255,0.85)'
-                          : 'var(--secondary)',
+                          : 'var(--text-muted)',
                       }}
                     >
                       <CheckCircle
                         size={16}
-                        color={tier.highlighted ? '#fff' : 'var(--primary)'}
+                        color={tier.highlighted ? '#fff' : 'var(--accent)'}
                         strokeWidth={2.5}
                         style={{ flexShrink: 0, marginTop: 2 }}
                       />
@@ -652,9 +662,9 @@ export default function OfficeSupport() {
                     borderRadius: 'var(--radius-pill)',
                     border: tier.highlighted
                       ? '2px solid #fff'
-                      : '2px solid var(--primary)',
+                      : '2px solid var(--accent)',
                     background: 'transparent',
-                    color: tier.highlighted ? '#fff' : 'var(--primary)',
+                    color: tier.highlighted ? '#fff' : 'var(--accent)',
                     textDecoration: 'none',
                     transition: 'all 0.2s ease',
                     marginTop: 'auto',
@@ -672,24 +682,16 @@ export default function OfficeSupport() {
       {/* ════════ 6. FAQ ════════ */}
       <section className="section">
         <div className="container">
-          <div className="section-header">
-            <motion.h2
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={scaleIn}
-            >
-              Frequently Asked Questions
-            </motion.h2>
-            <motion.p
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-            >
-              Common questions from office IT leaders
-            </motion.p>
-          </div>
+          <motion.div
+            className="section-header"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={fadeUp}
+          >
+            <h2>Frequently Asked Questions</h2>
+            <p>Common questions from office IT leaders</p>
+          </motion.div>
 
           <motion.div
             style={{ maxWidth: 720, margin: '0 auto' }}
@@ -714,12 +716,16 @@ export default function OfficeSupport() {
 
       {/* ════════ 7. CTA ════════ */}
       <section
-        className="section dot-pattern"
+        className="dot-pattern"
         style={{
+          position: 'relative',
+          overflow: 'hidden',
           background: 'var(--dark-hero)',
-          color: '#fff',
+          padding: 'clamp(64px, 8vw, 96px) 0',
         }}
       >
+        <GlowOrb size={500} color="rgba(37, 99, 235, 0.06)" />
+
         <div
           className="container"
           style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}
@@ -733,7 +739,16 @@ export default function OfficeSupport() {
             style={{ color: '#fff', marginBottom: 20 }}
           >
             Simplify Your{' '}
-            <span className="gradient-text">Office IT</span>
+            <span
+              style={{
+                background: 'linear-gradient(135deg, #2563EB 0%, #60A5FA 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              Office IT
+            </span>
           </motion.h2>
           <motion.p
             initial="hidden"
@@ -762,9 +777,11 @@ export default function OfficeSupport() {
               gap: 16,
             }}
           >
-            <Link to="/contact" className="btn btn-primary-lg">
-              Get a Custom Quote
-            </Link>
+            <MagneticButton>
+              <Link to="/contact" className="btn btn-primary-lg">
+                Get a Custom Quote
+              </Link>
+            </MagneticButton>
             <a
               href="tel:8447004728"
               style={{
@@ -797,7 +814,7 @@ export default function OfficeSupport() {
             className="section-header"
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.3 }}
             variants={fadeUp}
           >
             <h2>Explore Other Solutions</h2>
@@ -825,7 +842,7 @@ export default function OfficeSupport() {
                     padding: 28,
                   }}
                 >
-                  <Icon size={28} color="var(--primary)" strokeWidth={1.5} />
+                  <Icon size={28} color="var(--accent)" strokeWidth={1.5} />
                   <span
                     style={{
                       fontSize: 15,
@@ -835,11 +852,7 @@ export default function OfficeSupport() {
                   >
                     {label}
                   </span>
-                  <ArrowRight
-                    size={16}
-                    color="var(--text-muted)"
-                    strokeWidth={2}
-                  />
+                  <ArrowRight size={16} color="var(--text-muted)" strokeWidth={2} />
                 </Link>
               </motion.div>
             ))}
@@ -849,16 +862,9 @@ export default function OfficeSupport() {
 
       {/* ── Responsive overrides ── */}
       <style>{`
-        .os-steps-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 24px;
-          max-width: 900px;
-          margin: 0 auto;
-        }
         @media (min-width: 768px) {
           .os-steps-grid {
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr !important;
           }
         }
         .os-tiers-grid {

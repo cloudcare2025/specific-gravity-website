@@ -2,64 +2,106 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  CheckCircle,
   ChevronDown,
   ArrowRight,
   Store,
   Truck,
   Monitor,
+  Users,
   AlertTriangle,
   Clock,
   DollarSign,
-  Shield,
+  Wifi,
+  Wrench,
+  Server,
+  Zap,
+  ShieldCheck,
+  BarChart3,
 } from 'lucide-react';
-import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import {
   fadeUp,
   fadeDown,
   fadeLeft,
+  fadeRight,
   scaleIn,
   staggerContainer,
   staggerItem,
 } from '../animation/variants';
 import { springSnappy, springGentle } from '../animation/springs';
+import CardTilt from '../components/CardTilt';
+import MagneticButton from '../components/MagneticButton';
+import GlowOrb from '../components/GlowOrb';
 import Breadcrumbs from '../components/Breadcrumbs';
 import SEOHead from '../components/SEOHead';
 
-/* ── Data ── */
+/* ══════════════════════════════════════════════════
+   DATA
+   ══════════════════════════════════════════════════ */
 
 const PAIN_POINTS = [
   {
     icon: AlertTriangle,
-    title: 'POS goes down during Friday dinner rush',
-    desc: 'Your staff scrambles. Orders back up. Guests walk out. You call a generic IT vendor who has never seen a kitchen.',
+    title: 'POS crashes during the dinner rush',
+    desc: 'Your staff scrambles. Orders pile up. Guests walk out. You call a generic IT vendor who has never stepped inside a kitchen.',
   },
   {
     icon: Clock,
-    title: 'New location opens in 6 weeks',
-    desc: 'The GC is asking about data drops. The ISP won\'t commit to a date. Nobody owns the technology timeline.',
+    title: 'New location opens in 6 weeks — and nobody owns the tech',
+    desc: "The GC is asking about data drops. The ISP won't commit to a date. Three vendors, zero accountability.",
   },
   {
     icon: DollarSign,
-    title: 'Three vendors, three invoices, zero accountability',
-    desc: 'One company for cabling, another for POS, a third for the network. When something breaks, they all point at each other.',
+    title: 'Every outage costs you revenue and reputation',
+    desc: 'One bad night on Google Reviews can undo months of marketing. Downtime is not an IT problem — it is a business problem.',
   },
 ];
 
-const KEY_POINTS = [
-  'Single point of contact for POS, network, cabling, and ongoing support',
-  'Restaurant-trained technicians available 24/7 — including holidays',
-  'Technology agnostic: Toast, Square, Aloha, Meraki, any existing stack',
-  'No required hardware or software purchases — we work with what you have',
+const CAPABILITIES = [
+  {
+    icon: Wrench,
+    title: 'POS Installation & Support',
+    desc: 'Toast, Square, Aloha, Revel, Lightspeed, Clover — installed, configured, menu-programmed, and supported 24/7.',
+  },
+  {
+    icon: Wifi,
+    title: 'Networking & Guest Wi-Fi',
+    desc: 'Segmented networks isolating guest traffic from POS and BOH systems. Captive portals, bandwidth throttling, enterprise firewall rules.',
+  },
+  {
+    icon: Server,
+    title: 'Kitchen Display & AV Systems',
+    desc: 'KDS routing logic, expo screens, bump-bar setups, and digital menu boards — integrated directly with your POS.',
+  },
+  {
+    icon: Zap,
+    title: 'New Store Buildouts',
+    desc: 'From lease signing to first ticket. ISP procurement, structured cabling, POS setup, and final verification — one vendor, on schedule.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Structured Cabling',
+    desc: 'Low-voltage cabling across BOH and FOH, installed and terminated to spec. Coordinated with architects and general contractors.',
+  },
+  {
+    icon: BarChart3,
+    title: 'Multi-Unit Rollouts',
+    desc: 'Standardized technology playbook for your brand, replicated across every new location. Consistent experience at scale.',
+  },
 ];
 
-const TIMELINE = [
+const PROCESS_STEPS = [
   { step: 'Assess', desc: 'Kitchen workflow, POS layout, and front-of-house connectivity audit' },
   { step: 'Plan', desc: 'Coordinate with architects and GCs on data, AV, and power placement' },
-  { step: 'Procure', desc: 'Source and pre-configure POS terminals, KDS units, and networking gear' },
-  { step: 'Connect', desc: 'ISP installation, guest Wi-Fi segmentation, and VPN setup' },
-  { step: 'Build', desc: 'Structured cabling across BOH and FOH, installed and terminated' },
-  { step: 'Verify', desc: 'Full burn-in: test orders, KDS routing, and payment processing validation' },
+  { step: 'Build', desc: 'Source, pre-configure, cable, and install all technology systems' },
+  { step: 'Verify', desc: 'Full burn-in: test orders, KDS routing, payment processing, guest Wi-Fi' },
+  { step: 'Support', desc: '24/7 help desk with restaurant-trained technicians — including holidays' },
+];
+
+const STATS = [
+  { value: '500+', label: 'Restaurant locations supported' },
+  { value: '24/7', label: 'Help desk coverage' },
+  { value: '<15 min', label: 'Average response time' },
+  { value: '99.9%', label: 'POS uptime across clients' },
 ];
 
 const CLIENT_NAMES = [
@@ -73,13 +115,6 @@ const CLIENT_NAMES = [
   'OnRye',
   'Boston Baking',
   'Fields Good Chicken',
-];
-
-const STATS = [
-  { value: '500+', label: 'Restaurant locations supported' },
-  { value: '24/7', label: 'Help desk coverage' },
-  { value: '<15 min', label: 'Average response time' },
-  { value: '99.9%', label: 'POS uptime across clients' },
 ];
 
 const FAQ_DATA = [
@@ -107,7 +142,7 @@ const FAQ_DATA = [
 
 const SIBLING_SOLUTIONS = [
   {
-    label: 'Retail',
+    label: 'Retail IT',
     path: '/solutions/retail',
     icon: Store,
     desc: 'POS, inventory, and payment infrastructure for retail stores.',
@@ -124,9 +159,18 @@ const SIBLING_SOLUTIONS = [
     icon: Monitor,
     desc: 'Help desk, network, and endpoint management for offices.',
   },
+  {
+    label: 'Dedicated Resources',
+    path: '/solutions/dedicated-resources',
+    icon: Users,
+    desc: 'Full-time IT professionals on our payroll, embedded in your brand.',
+  },
 ];
 
-/* ── FAQ Accordion Item ── */
+/* ══════════════════════════════════════════════════
+   FAQ ACCORDION
+   ══════════════════════════════════════════════════ */
+
 function FAQItem({ question, answer, isOpen, onToggle }) {
   return (
     <div style={{ borderBottom: '1px solid var(--border)' }}>
@@ -138,12 +182,12 @@ function FAQItem({ question, answer, isOpen, onToggle }) {
           alignItems: 'center',
           justifyContent: 'space-between',
           width: '100%',
-          padding: '24px 0',
+          padding: '20px 0',
           background: 'none',
           border: 'none',
           cursor: 'pointer',
           textAlign: 'left',
-          fontSize: 17,
+          fontSize: 16,
           fontWeight: 600,
           color: 'var(--text-primary)',
           lineHeight: 1.4,
@@ -174,7 +218,7 @@ function FAQItem({ question, answer, isOpen, onToggle }) {
                 fontWeight: 500,
                 color: 'var(--text-muted)',
                 lineHeight: 1.7,
-                paddingBottom: 24,
+                paddingBottom: 20,
                 maxWidth: 680,
               }}
             >
@@ -187,69 +231,62 @@ function FAQItem({ question, answer, isOpen, onToggle }) {
   );
 }
 
-/* ── Component ── */
-export default function Hospitality() {
-  const [painRef, painVis] = useScrollAnimation(0.15);
-  const [supportRef, supportVis] = useScrollAnimation(0.2);
-  const [buildRef, buildVis] = useScrollAnimation(0.15);
-  const [proofRef, proofVis] = useScrollAnimation(0.2);
-  const [faqRef, faqVis] = useScrollAnimation(0.15);
-  const [pricingRef, pricingVis] = useScrollAnimation(0.2);
-  const [navRef, navVis] = useScrollAnimation(0.2);
+/* ══════════════════════════════════════════════════
+   COMPONENT
+   ══════════════════════════════════════════════════ */
 
+export default function Hospitality() {
   const [openFaq, setOpenFaq] = useState(null);
 
   return (
     <>
       <SEOHead
         title="Hospitality IT Support — SpecGravity"
-        description="24/7 managed IT for restaurants, hotels, coffee shops, and QSR chains. POS support, guest Wi-Fi, kitchen display systems, and multi-unit rollouts."
+        description="24/7 managed IT for restaurants, coffee shops, and QSR chains. POS support, guest Wi-Fi, kitchen display systems, structured cabling, and multi-unit rollouts."
         path="/solutions/hospitality"
       />
 
-      {/* ════════ BREADCRUMBS ════════ */}
-      <div
-        className="dot-pattern"
-        style={{
-          background: 'var(--dark-hero)',
-          padding: '20px 0 0',
-        }}
-      >
-        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ color: 'rgba(255,255,255,0.5)' }}>
-            <Breadcrumbs />
-          </div>
-        </div>
-      </div>
-
-      {/* ════════ 1. HERO — Clean text, single CTA ════════ */}
+      {/* ════════ 1. HERO ════════ */}
       <section
         className="dot-pattern"
         style={{
-          background: 'var(--dark-hero)',
-          color: '#fff',
-          padding: '64px 0 100px',
+          position: 'relative',
           overflow: 'hidden',
+          background: 'var(--dark-hero)',
+          padding: 'clamp(120px, 12vw, 160px) 0 clamp(64px, 8vw, 96px)',
         }}
       >
         <div
-          className="container"
-          style={{ position: 'relative', zIndex: 1 }}
-        >
+          style={{
+            position: 'absolute',
+            top: '-20%',
+            right: '-10%',
+            width: 600,
+            height: 600,
+            background: 'radial-gradient(circle, rgba(37, 99, 235, 0.06) 0%, transparent 70%)',
+            pointerEvents: 'none',
+          }}
+        />
+
+        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ marginBottom: 32 }}>
+            <Breadcrumbs />
+          </div>
+
           <motion.div
             initial="hidden"
             animate="visible"
             variants={fadeLeft}
-            style={{ maxWidth: 680 }}
+            style={{ maxWidth: 720 }}
           >
             <p
               style={{
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: 600,
-                letterSpacing: '0.08em',
+                letterSpacing: '0.1em',
                 textTransform: 'uppercase',
-                color: 'rgba(255,255,255,0.4)',
-                marginBottom: 16,
+                color: 'rgba(255,255,255,0.35)',
+                marginBottom: 20,
               }}
             >
               Hospitality IT
@@ -257,15 +294,24 @@ export default function Hospitality() {
             <h1
               className="display-xl"
               style={{
+                color: '#fff',
                 fontWeight: 700,
                 letterSpacing: '-0.02em',
                 lineHeight: 1.08,
                 marginBottom: 24,
               }}
             >
-              Your POS Went Down
+              Your POS Went Down{' '}
               <br />
-              <span style={{ color: 'rgba(255,255,255,0.4)' }}>During the Dinner Rush.</span>
+              <span
+                style={{
+                  background: 'linear-gradient(135deg, #2563EB 0%, #60A5FA 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                During the Dinner Rush.
+              </span>
             </h1>
             <p
               style={{
@@ -274,29 +320,32 @@ export default function Hospitality() {
                 color: 'rgba(255,255,255,0.6)',
                 lineHeight: 1.65,
                 marginBottom: 40,
-                maxWidth: 540,
+                maxWidth: 560,
               }}
             >
               We make sure it never happens again. 24/7 restaurant-trained IT
               support for POS, networking, kitchen displays, and multi-unit
               rollouts.
             </p>
-            <Link to="/contact" className="btn btn-primary-lg">
-              Get Your Free Assessment
-              <ArrowRight size={18} strokeWidth={2} />
-            </Link>
+            <MagneticButton>
+              <Link to="/contact" className="btn btn-primary-lg">
+                Get Your Free Assessment
+                <ArrowRight size={18} strokeWidth={2} />
+              </Link>
+            </MagneticButton>
           </motion.div>
         </div>
       </section>
 
-      {/* ════════ 2. PAIN AGITATION — Name the problem ════════ */}
-      <section className="section" ref={painRef}>
+      {/* ════════ 2. PAIN AGITATION ════════ */}
+      <section className="section" style={{ background: 'var(--card-bg)' }}>
         <div className="container">
           <motion.div
             className="section-header"
-            initial="hidden"
-            animate={painVis ? 'visible' : 'hidden'}
             variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
           >
             <h2>Sound Familiar?</h2>
             <p>These are the problems restaurant operators tell us about every week.</p>
@@ -304,132 +353,146 @@ export default function Hospitality() {
 
           <motion.div
             className="grid-3"
-            initial="hidden"
-            animate={painVis ? 'visible' : 'hidden'}
+            style={{ maxWidth: 1040, margin: '0 auto' }}
             variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
           >
             {PAIN_POINTS.map(({ icon: Icon, title, desc }) => (
-              <motion.div
-                key={title}
-                variants={staggerItem}
-                className="card"
-                style={{ cursor: 'default' }}
-              >
-                <div
+              <CardTilt key={title}>
+                <motion.div
+                  variants={staggerItem}
                   style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 'var(--radius-md)',
-                    background: 'var(--alt-bg)',
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: 20,
+                    flexDirection: 'column',
+                    gap: 16,
+                    padding: 28,
+                    background: 'var(--alt-bg)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 14,
+                    height: '100%',
                   }}
                 >
-                  <Icon size={24} color="var(--text-primary)" strokeWidth={1.5} />
-                </div>
-                <h3
-                  style={{
-                    fontSize: 17,
-                    fontWeight: 700,
-                    color: 'var(--text-primary)',
-                    lineHeight: 1.3,
-                    marginBottom: 10,
-                  }}
-                >
-                  {title}
-                </h3>
-                <p
-                  style={{
-                    fontSize: 15,
-                    fontWeight: 500,
-                    color: 'var(--text-muted)',
-                    lineHeight: 1.65,
-                  }}
-                >
-                  {desc}
-                </p>
-              </motion.div>
+                  <div
+                    style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 'var(--radius-md)',
+                      background: 'var(--accent-light)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Icon size={24} color="var(--accent)" strokeWidth={1.5} />
+                  </div>
+                  <h3
+                    style={{
+                      fontSize: 17,
+                      fontWeight: 700,
+                      color: 'var(--text-primary)',
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {title}
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: 15,
+                      fontWeight: 500,
+                      color: 'var(--text-muted)',
+                      lineHeight: 1.65,
+                    }}
+                  >
+                    {desc}
+                  </p>
+                </motion.div>
+              </CardTilt>
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* ════════ 3. THE SOLUTION — Key Points ════════ */}
-      <section className="section section-alt" ref={supportRef}>
+      {/* ════════ 3. SOLUTION — What We Do ════════ */}
+      <section className="section section-alt">
         <div className="container">
           <motion.div
+            className="section-header"
+            variants={fadeUp}
             initial="hidden"
-            animate={supportVis ? 'visible' : 'hidden'}
-            variants={fadeLeft}
-            style={{ maxWidth: 640 }}
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
           >
-            <h2 style={{ marginBottom: 12 }}>
-              One Partner. Every Location. All Your Technology.
-            </h2>
-            <p
-              style={{
-                fontSize: 16,
-                fontWeight: 500,
-                color: 'var(--text-muted)',
-                lineHeight: 1.65,
-                marginBottom: 36,
-                maxWidth: 560,
-              }}
-            >
+            <h2>One Partner. Every Location. All Your Technology.</h2>
+            <p>
               Stop juggling vendors. We replace the chaos with a single point of
               accountability for every piece of technology in your restaurants.
             </p>
-            <motion.div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 20,
-              }}
-              variants={staggerContainer}
-              initial="hidden"
-              animate={supportVis ? 'visible' : 'hidden'}
-            >
-              {KEY_POINTS.map((pt, i) => (
+          </motion.div>
+
+          <motion.div
+            className="grid-3"
+            style={{ maxWidth: 1040, margin: '0 auto' }}
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.15 }}
+          >
+            {CAPABILITIES.map(({ icon: Icon, title, desc }) => (
+              <CardTilt key={title}>
                 <motion.div
-                  key={i}
+                  variants={staggerItem}
                   style={{
                     display: 'flex',
+                    flexDirection: 'column',
                     gap: 14,
-                    alignItems: 'flex-start',
+                    padding: 28,
+                    background: 'var(--card-bg)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 14,
+                    height: '100%',
                   }}
-                  variants={staggerItem}
                 >
-                  <CheckCircle
-                    size={22}
-                    style={{ flexShrink: 0, color: 'var(--primary)', marginTop: 2 }}
-                  />
-                  <span
+                  <div
                     style={{
-                      fontSize: 16,
-                      fontWeight: 500,
-                      color: 'var(--text-primary)',
-                      lineHeight: 1.6,
+                      width: 44,
+                      height: 44,
+                      borderRadius: 10,
+                      background: 'var(--accent-light)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
                   >
-                    {pt}
-                  </span>
+                    <Icon size={22} color="var(--accent)" strokeWidth={1.5} />
+                  </div>
+                  <h4 style={{ fontWeight: 700, fontSize: 17 }}>{title}</h4>
+                  <p
+                    style={{
+                      color: 'var(--text-muted)',
+                      fontSize: 14,
+                      lineHeight: 1.7,
+                    }}
+                  >
+                    {desc}
+                  </p>
                 </motion.div>
-              ))}
-            </motion.div>
+              </CardTilt>
+            ))}
           </motion.div>
         </div>
       </section>
 
-      {/* ════════ 4. NEW STORE BUILDOUT TIMELINE ════════ */}
-      <section className="section" ref={buildRef}>
+      {/* ════════ 4. PROCESS — New Store Buildout ════════ */}
+      <section className="section" style={{ background: 'var(--card-bg)' }}>
         <div className="container">
           <motion.div
             className="section-header"
-            initial="hidden"
-            animate={buildVis ? 'visible' : 'hidden'}
             variants={fadeDown}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
           >
             <h2>New Restaurant Openings, Handled</h2>
             <p>From lease signing to first ticket — every technology milestone managed.</p>
@@ -441,9 +504,10 @@ export default function Hospitality() {
               maxWidth: 640,
               margin: '0 auto',
             }}
-            initial="hidden"
-            animate={buildVis ? 'visible' : 'hidden'}
             variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.15 }}
           >
             <div
               style={{
@@ -452,19 +516,20 @@ export default function Hospitality() {
                 top: 0,
                 bottom: 0,
                 width: 2,
-                background: 'linear-gradient(180deg, var(--primary) 0%, var(--border) 100%)',
+                background: 'linear-gradient(180deg, var(--accent) 0%, var(--border) 100%)',
               }}
             />
-            {TIMELINE.map(({ step, desc }, i) => (
+
+            {PROCESS_STEPS.map(({ step, desc }, i) => (
               <motion.div
-                key={i}
+                key={step}
+                variants={staggerItem}
                 style={{
                   position: 'relative',
                   display: 'flex',
                   gap: 24,
-                  paddingBottom: i === TIMELINE.length - 1 ? 0 : 40,
+                  paddingBottom: i === PROCESS_STEPS.length - 1 ? 0 : 40,
                 }}
-                variants={staggerItem}
               >
                 <div
                   style={{
@@ -472,7 +537,7 @@ export default function Hospitality() {
                     width: 40,
                     height: 40,
                     borderRadius: '50%',
-                    background: 'var(--primary)',
+                    background: 'var(--accent)',
                     color: '#fff',
                     display: 'flex',
                     alignItems: 'center',
@@ -516,20 +581,21 @@ export default function Hospitality() {
         </div>
       </section>
 
-      {/* ════════ 5. SOCIAL PROOF — Stats + Client Names ════════ */}
-      <section className="section section-alt" ref={proofRef}>
+      {/* ════════ 5. PROOF — Stats + Client Names ════════ */}
+      <section className="section section-alt">
         <div className="container">
           <motion.div
             className="section-header"
-            initial="hidden"
-            animate={proofVis ? 'visible' : 'hidden'}
             variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
           >
             <h2>Trusted by Leading Hospitality Brands</h2>
           </motion.div>
 
-          {/* Stats row */}
           <motion.div
+            className="hosp-stats-grid"
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(2, 1fr)',
@@ -537,10 +603,10 @@ export default function Hospitality() {
               maxWidth: 720,
               margin: '0 auto 56px',
             }}
-            className="hosp-stats-grid"
-            initial="hidden"
-            animate={proofVis ? 'visible' : 'hidden'}
             variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
           >
             {STATS.map(({ value, label }) => (
               <motion.div
@@ -573,7 +639,6 @@ export default function Hospitality() {
             ))}
           </motion.div>
 
-          {/* Client names — static grid, not marquee */}
           <motion.div
             style={{
               display: 'flex',
@@ -583,9 +648,10 @@ export default function Hospitality() {
               maxWidth: 680,
               margin: '0 auto',
             }}
-            initial="hidden"
-            animate={proofVis ? 'visible' : 'hidden'}
             variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
           >
             {CLIENT_NAMES.map((name) => (
               <motion.span
@@ -613,26 +679,28 @@ export default function Hospitality() {
       </section>
 
       {/* ════════ 6. FAQ ════════ */}
-      <section className="section" ref={faqRef}>
+      <section className="section" style={{ background: 'var(--card-bg)' }}>
         <div className="container">
           <motion.div
             className="section-header"
+            variants={fadeDown}
             initial="hidden"
-            animate={faqVis ? 'visible' : 'hidden'}
-            variants={fadeUp}
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
           >
             <h2>Frequently Asked Questions</h2>
             <p>Everything restaurant operators ask before getting started.</p>
           </motion.div>
 
-          <motion.div
-            style={{ maxWidth: 720, margin: '0 auto' }}
-            initial="hidden"
-            animate={faqVis ? 'visible' : 'hidden'}
-            variants={staggerContainer}
-          >
+          <div style={{ maxWidth: 720, margin: '0 auto' }}>
             {FAQ_DATA.map((item, i) => (
-              <motion.div key={i} variants={staggerItem}>
+              <motion.div
+                key={i}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+              >
                 <FAQItem
                   question={item.q}
                   answer={item.a}
@@ -641,156 +709,118 @@ export default function Hospitality() {
                 />
               </motion.div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* ════════ 7. PRICING SIGNAL — Specific value anchors ════════ */}
-      <section className="section section-alt" ref={pricingRef}>
-        <div className="container" style={{ textAlign: 'center' }}>
-          <motion.div
-            initial="hidden"
-            animate={pricingVis ? 'visible' : 'hidden'}
-            variants={scaleIn}
-            style={{
-              maxWidth: 600,
-              margin: '0 auto',
-            }}
-          >
-            <h2 style={{ marginBottom: 16 }}>Pricing That Scales With You</h2>
-            <p
-              style={{
-                fontSize: 16,
-                fontWeight: 500,
-                color: 'var(--text-muted)',
-                lineHeight: 1.65,
-                marginBottom: 28,
-              }}
-            >
-              Plans are built around your unit count, support hours, and
-              technology stack. Most restaurant groups start between $500 and
-              $2,500 per location per month depending on scope.
-            </p>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 8,
-                alignItems: 'center',
-                marginBottom: 36,
-              }}
-            >
-              {[
-                'No long-term contracts required',
-                'Month-to-month flexibility for seasonal concepts',
-                'Volume discounts for 10+ locations',
-              ].map((line) => (
-                <div
-                  key={line}
-                  style={{
-                    display: 'flex',
-                    gap: 10,
-                    alignItems: 'center',
-                  }}
-                >
-                  <Shield size={16} color="var(--text-muted)" strokeWidth={2} />
-                  <span
-                    style={{
-                      fontSize: 14,
-                      fontWeight: 500,
-                      color: 'var(--text-muted)',
-                    }}
-                  >
-                    {line}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <Link to="/contact" className="btn btn-primary-lg">
-              Get Your Free Assessment
-              <ArrowRight size={18} strokeWidth={2} />
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ════════ 8. FINAL CTA ════════ */}
+      {/* ════════ 7. FINAL CTA ════════ */}
       <section
-        className="section dot-pattern"
+        className="dot-pattern"
         style={{
+          position: 'relative',
+          overflow: 'hidden',
           background: 'var(--dark-hero)',
-          color: '#fff',
+          padding: 'clamp(64px, 8vw, 96px) 0',
         }}
       >
+        <GlowOrb size={500} color="rgba(37, 99, 235, 0.06)" />
+
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 500,
+            height: 500,
+            background: 'radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%)',
+            pointerEvents: 'none',
+          }}
+        />
+
         <div
           className="container"
           style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}
         >
           <motion.h2
             className="display-lg"
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
             style={{
+              color: '#fff',
               fontWeight: 700,
               letterSpacing: '-0.02em',
               lineHeight: 1.1,
-              color: '#fff',
-              marginBottom: 16,
+              marginBottom: 20,
             }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.5 }}
-            variants={fadeUp}
           >
-            Stop Losing Revenue to Downtime
+            Stop Losing Revenue to{' '}
+            <span
+              style={{
+                background: 'linear-gradient(135deg, #2563EB 0%, #60A5FA 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              Downtime
+            </span>
           </motion.h2>
           <motion.p
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
             style={{
               fontSize: 17,
               fontWeight: 500,
               color: 'rgba(255,255,255,0.5)',
               lineHeight: 1.6,
-              marginBottom: 36,
               maxWidth: 480,
               margin: '0 auto 36px',
             }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.5 }}
-            variants={fadeUp}
           >
             Talk to a hospitality IT specialist. No sales pitch — just an
             honest assessment of your technology gaps.
           </motion.p>
           <motion.div
+            variants={scaleIn}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.5 }}
-            variants={scaleIn}
+            viewport={{ once: true, amount: 0.3 }}
           >
-            <Link to="/contact" className="btn btn-primary-lg">
-              Get Your Free Assessment
-              <ArrowRight size={18} strokeWidth={2} />
-            </Link>
+            <MagneticButton>
+              <Link to="/contact" className="btn btn-primary-lg">
+                Get Your Free Assessment
+                <ArrowRight size={18} strokeWidth={2} />
+              </Link>
+            </MagneticButton>
           </motion.div>
         </div>
       </section>
 
-      {/* ════════ 9. CROSS-NAVIGATION — 3 links max ════════ */}
-      <section className="section" ref={navRef} style={{ background: 'var(--card-bg)' }}>
+      {/* ════════ 8. CROSS-NAVIGATION ════════ */}
+      <section className="section" style={{ background: 'var(--card-bg)' }}>
         <div className="container">
           <motion.div
             className="section-header"
+            variants={fadeRight}
             initial="hidden"
-            animate={navVis ? 'visible' : 'hidden'}
-            variants={fadeUp}
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
           >
-            <h2>Explore Other Solutions</h2>
+            <h2>Explore More Solutions</h2>
+            <p>See how SpecGravity supports every layer of your IT operation</p>
           </motion.div>
 
           <motion.div
-            className="grid-3"
-            initial="hidden"
-            animate={navVis ? 'visible' : 'hidden'}
+            className="grid-4"
+            style={{ maxWidth: 1040, margin: '0 auto' }}
             variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
           >
             {SIBLING_SOLUTIONS.map(({ label, path, icon: Icon, desc }) => (
               <motion.div key={path} variants={staggerItem}>
@@ -805,10 +835,10 @@ export default function Hospitality() {
                     padding: 28,
                   }}
                 >
-                  <Icon size={24} color="var(--primary)" strokeWidth={1.5} />
+                  <Icon size={24} color="var(--accent)" strokeWidth={1.5} />
                   <span
                     style={{
-                      fontSize: 16,
+                      fontSize: 15,
                       fontWeight: 600,
                       color: 'var(--text-primary)',
                     }}
@@ -838,7 +868,6 @@ export default function Hospitality() {
         </div>
       </section>
 
-      {/* ── Responsive overrides ── */}
       <style>{`
         @media (min-width: 768px) {
           .hosp-stats-grid {

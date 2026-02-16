@@ -18,6 +18,7 @@ const ACCENT = '#2563EB';
 export default function Footer() {
   const year = new Date().getFullYear();
   const [email, setEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
   const [focusedEl, setFocusedEl] = useState(null);
 
   const s = {
@@ -212,6 +213,7 @@ export default function Footer() {
     e.preventDefault();
     if (email.trim()) {
       setEmail('');
+      setSubscribed(true);
     }
   };
 
@@ -280,31 +282,37 @@ export default function Footer() {
                 {item.label}
               </Link>
             ))}
-            <p style={s.newsletterLabel}>Subscribe to our newsletter</p>
-            <form style={s.newsletterForm} onSubmit={handleSubscribe}>
-              <input
-                type="email"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                aria-label="Email address for newsletter"
-                style={{ ...s.newsletterInput, ...getFocusStyle('newsletter-input') }}
-                onFocus={(e) => { handleInputFocus(e, true); handleFocusVisible('newsletter-input')(e); }}
-                onBlur={(e) => { handleInputFocus(e, false); handleBlur(); }}
-              />
-              <button
-                type="submit"
-                style={{ ...s.newsletterBtn, ...getFocusStyle('newsletter-btn') }}
-                onMouseEnter={(e) => handleBtnHover(e, true)}
-                onMouseLeave={(e) => handleBtnHover(e, false)}
-                onFocus={handleFocusVisible('newsletter-btn')}
-                onBlur={handleBlur}
-                aria-label="Subscribe to newsletter"
-              >
-                Subscribe
-              </button>
-            </form>
+            {subscribed ? (
+              <p style={s.newsletterLabel}>Thanks! You're subscribed.</p>
+            ) : (
+              <>
+                <p style={s.newsletterLabel}>Subscribe to our newsletter</p>
+                <form style={s.newsletterForm} onSubmit={handleSubscribe}>
+                  <input
+                    type="email"
+                    placeholder="Email address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    aria-label="Email address for newsletter"
+                    style={{ ...s.newsletterInput, ...getFocusStyle('newsletter-input') }}
+                    onFocus={(e) => { handleInputFocus(e, true); handleFocusVisible('newsletter-input')(e); }}
+                    onBlur={(e) => { handleInputFocus(e, false); handleBlur(); }}
+                  />
+                  <button
+                    type="submit"
+                    style={{ ...s.newsletterBtn, ...getFocusStyle('newsletter-btn') }}
+                    onMouseEnter={(e) => handleBtnHover(e, true)}
+                    onMouseLeave={(e) => handleBtnHover(e, false)}
+                    onFocus={handleFocusVisible('newsletter-btn')}
+                    onBlur={handleBlur}
+                    aria-label="Subscribe to newsletter"
+                  >
+                    Subscribe
+                  </button>
+                </form>
+              </>
+            )}
           </nav>
         </div>
       </div>

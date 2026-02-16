@@ -6,7 +6,7 @@ import { clients } from '../data/clients';
 import { logoUrl } from '../utils/logoUrl';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import { fadeUp, fadeDown, scaleIn, staggerContainer, staggerItem } from '../animation/variants';
-import { springGentle, springSnappy, springBouncy } from '../animation/springs';
+import { springSnappy } from '../animation/springs';
 import Breadcrumbs from '../components/Breadcrumbs';
 import SEOHead from '../components/SEOHead';
 

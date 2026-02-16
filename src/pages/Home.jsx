@@ -18,7 +18,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useScrollAnimation, useCounter } from '../hooks/useScrollAnimation';
-import { logoRow1, logoRow2, testimonials } from '../data/clients';
+import { logoRow1, logoRow2, testimonials, clients } from '../data/clients';
 import { logoUrl } from '../utils/logoUrl';
 import {
   fadeUp,
@@ -29,7 +29,7 @@ import {
   staggerContainer,
   staggerItem,
 } from '../animation/variants';
-import { springSnappy, springGentle, springBouncy, springSmooth } from '../animation/springs';
+import { springSnappy, springGentle } from '../animation/springs';
 import CardTilt from '../components/CardTilt';
 import GlowOrb from '../components/GlowOrb';
 import ScrollIndicator from '../components/ScrollIndicator';
@@ -76,8 +76,10 @@ const steps = [
   { num: '03', title: 'You Stay Open', icon: CheckCircle, desc: 'Verified resolution with store manager sign-off. Weekly strategic meetings to prevent future issues.' },
 ];
 
+const clientDomainMap = Object.fromEntries(clients.map(c => [c.name, c.domain]));
+
 const caseStudyClients = [
-  'Saxbys Coffee', "Lowe's", 'Philz Coffee', 'Juiceland', 'Pat LaFrieda',
+  'Saxbys Coffee', "Lowe's", 'Philz Coffee', 'Burger King', 'Roche Bobois',
   "Kellogg's NYC", 'Fields Good Chicken', 'Revlon', 'The Little Beet Table',
 ];
 
@@ -587,32 +589,56 @@ export default function Home() {
             whileInView="visible"
             viewport={{ once: true, amount: 0.1 }}
           >
-            {caseStudyClients.map((name, i) => (
-              <motion.div
-                key={name}
-                variants={staggerItem}
-                style={{
-                  position: 'relative',
-                  borderRadius: 16,
-                  overflow: 'hidden',
-                  background: caseStudyGradients[i],
-                  aspectRatio: '4 / 3',
-                  cursor: 'pointer',
-                  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                }}
-                whileHover={{ scale: 1.02, boxShadow: '0 12px 40px rgba(0,0,0,0.15)' }}
-              >
-                <div style={{
-                  position: 'absolute', bottom: 0, left: 0, right: 0,
-                  padding: '24px 20px 20px',
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%)',
-                  backdropFilter: 'blur(16px)',
-                  borderTop: '1px solid rgba(255,255,255,0.15)',
-                }}>
-                  <span style={{ color: '#fff', fontFamily: "'Sora', sans-serif", fontWeight: 700, fontSize: 16 }}>{name}</span>
-                </div>
-              </motion.div>
-            ))}
+            {caseStudyClients.map((name, i) => {
+              const domain = clientDomainMap[name];
+              return (
+                <motion.div
+                  key={name}
+                  variants={staggerItem}
+                  style={{
+                    position: 'relative',
+                    borderRadius: 16,
+                    overflow: 'hidden',
+                    background: caseStudyGradients[i],
+                    aspectRatio: '4 / 3',
+                    cursor: 'pointer',
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  whileHover={{ scale: 1.02, boxShadow: '0 12px 40px rgba(0,0,0,0.15)' }}
+                >
+                  {domain && (
+                    <img
+                      src={logoUrl(domain, { theme: 'dark', size: 128 })}
+                      alt={name}
+                      loading="lazy"
+                      onError={e => { e.currentTarget.style.display = 'none'; }}
+                      style={{
+                        maxHeight: '35%',
+                        maxWidth: '55%',
+                        objectFit: 'contain',
+                        filter: 'grayscale(1) brightness(1.8)',
+                        opacity: 0.5,
+                        transition: 'filter 0.3s ease, opacity 0.3s ease',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.filter = 'grayscale(0) brightness(1)'; e.currentTarget.style.opacity = '0.9'; }}
+                      onMouseLeave={e => { e.currentTarget.style.filter = 'grayscale(1) brightness(1.8)'; e.currentTarget.style.opacity = '0.5'; }}
+                    />
+                  )}
+                  <div style={{
+                    position: 'absolute', bottom: 0, left: 0, right: 0,
+                    padding: '24px 20px 20px',
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%)',
+                    backdropFilter: 'blur(16px)',
+                    borderTop: '1px solid rgba(255,255,255,0.15)',
+                  }}>
+                    <span style={{ color: '#fff', fontFamily: "'Sora', sans-serif", fontWeight: 700, fontSize: 16 }}>{name}</span>
+                  </div>
+                </motion.div>
+              );
+            })}
           </motion.div>
           <motion.div
             variants={fadeUp}

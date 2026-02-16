@@ -32,7 +32,7 @@ export function useCounter(target, duration = 2000, isVisible = false) {
   useEffect(() => {
     if (!isVisible) return;
 
-    let start = 0;
+    let rafId;
     const startTime = performance.now();
 
     function animate(currentTime) {
@@ -42,13 +42,14 @@ export function useCounter(target, duration = 2000, isVisible = false) {
       setCount(Math.floor(eased * target));
 
       if (progress < 1) {
-        requestAnimationFrame(animate);
+        rafId = requestAnimationFrame(animate);
       } else {
         setCount(target);
       }
     }
 
-    requestAnimationFrame(animate);
+    rafId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafId);
   }, [target, duration, isVisible]);
 
   return count;

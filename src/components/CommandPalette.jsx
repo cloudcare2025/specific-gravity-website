@@ -72,10 +72,10 @@ export default function CommandPalette() {
   }, [query]);
 
   function handleKeyDown(e) {
-    if (e.key === 'ArrowDown') {
+    if (e.key === 'ArrowDown' && filtered.length > 0) {
       e.preventDefault();
       setSelectedIndex((i) => (i + 1) % filtered.length);
-    } else if (e.key === 'ArrowUp') {
+    } else if (e.key === 'ArrowUp' && filtered.length > 0) {
       e.preventDefault();
       setSelectedIndex((i) => (i - 1 + filtered.length) % filtered.length);
     } else if (e.key === 'Enter' && filtered.length > 0) {

@@ -20,11 +20,6 @@ const SOLUTIONS = [
   { label: 'Dedicated Resources', to: '/solutions/dedicated-resources' },
 ];
 
-const focusVisibleRing = {
-  outline: '2px solid #2563EB',
-  outlineOffset: '2px',
-};
-
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);

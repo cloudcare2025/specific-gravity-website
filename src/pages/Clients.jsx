@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { clients } from '../data/clients';
+import { logoUrl } from '../utils/logoUrl';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import { fadeUp, fadeDown, scaleIn, staggerContainer, staggerItem } from '../animation/variants';
 import { springGentle, springSnappy, springBouncy } from '../animation/springs';
@@ -138,8 +139,8 @@ const s = {
     cursor: 'default',
   },
   monogram: (gradient) => ({
-    width: 64,
-    height: 64,
+    width: 80,
+    height: 80,
     borderRadius: '50%',
     background: gradient,
     display: 'flex',
@@ -225,6 +226,41 @@ const s = {
     transition: 'transform 0.2s ease, box-shadow 0.2s ease',
   },
 };
+
+function ClientLogo({ domain, name, initial, gradient }) {
+  const [imgFailed, setImgFailed] = useState(false);
+
+  if (!domain || imgFailed) {
+    return <div style={s.monogram(gradient)}>{initial}</div>;
+  }
+
+  return (
+    <div style={{
+      width: 80,
+      height: 80,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      margin: '0 auto 20px',
+    }}>
+      <img
+        src={logoUrl(domain, { theme: 'light', size: 128 })}
+        alt={name}
+        loading="lazy"
+        onError={() => setImgFailed(true)}
+        style={{
+          maxWidth: 80,
+          maxHeight: 80,
+          objectFit: 'contain',
+          display: 'block',
+          filter: 'grayscale(1)',
+          opacity: 0.7,
+          transition: 'filter 0.3s ease, opacity 0.3s ease',
+        }}
+      />
+    </div>
+  );
+}
 
 export default function Clients() {
   const [activeFilter, setActiveFilter] = useState('All');
@@ -365,13 +401,22 @@ export default function Clients() {
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-5px)';
                       e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.08)';
+                      const img = e.currentTarget.querySelector('img');
+                      if (img) { img.style.filter = 'grayscale(0)'; img.style.opacity = '1'; }
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = 'translateY(0)';
                       e.currentTarget.style.boxShadow = 'none';
+                      const img = e.currentTarget.querySelector('img');
+                      if (img) { img.style.filter = 'grayscale(1)'; img.style.opacity = '0.7'; }
                     }}
                   >
-                    <div style={s.monogram(gradient)}>{initial}</div>
+                    <ClientLogo
+                      domain={client.domain}
+                      name={client.name}
+                      initial={initial}
+                      gradient={gradient}
+                    />
                     <div style={s.cardName}>{client.name}</div>
                   </motion.div>
                 );

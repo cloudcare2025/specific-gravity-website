@@ -15,26 +15,25 @@ import {
   Zap,
   Shield,
   TrendingUp,
+  AlertTriangle,
+  Clock,
+  DollarSign,
+  Users,
+  UtensilsCrossed,
 } from 'lucide-react';
 import { fadeUp, fadeDown, fadeLeft, fadeRight, scaleIn, staggerContainer, staggerItem } from '../animation/variants';
-import { springSnappy, springGentle, springBouncy, springSmooth } from '../animation/springs';
+import { springSnappy, springGentle } from '../animation/springs';
 import CardTilt from '../components/CardTilt';
 import Breadcrumbs from '../components/Breadcrumbs';
 import SEOHead from '../components/SEOHead';
 
-/* ─── constants ─── */
-const FONT_HEADING = "'Sora', sans-serif";
-const FONT_BODY = "'Inter', sans-serif";
-const PRIMARY = '#1A1A1A';
-const DARK_HERO = 'linear-gradient(135deg, #0a0a0a 0%, #111111 50%, #0d0d0d 100%)';
-
-const DOT_OVERLAY = {
-  position: 'absolute', inset: 0, pointerEvents: 'none',
-  backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px)',
-  backgroundSize: '24px 24px',
-};
-
 /* ─── data ─── */
+const painPoints = [
+  { icon: Clock, title: 'Hiring Takes Months', desc: 'The average IT hire takes 60+ days to fill. Every week without coverage is a week your team falls behind.' },
+  { icon: DollarSign, title: 'Total Cost Is Hidden', desc: 'Salary is just the start. Benefits, recruiting fees, onboarding, equipment, and turnover risk add 30-40% to the real cost.' },
+  { icon: AlertTriangle, title: 'Turnover Disrupts Everything', desc: 'IT professionals change jobs every 2-3 years. Each departure resets institutional knowledge and stalls projects.' },
+];
+
 const valueProps = [
   { icon: BadgeCheck, title: 'Fully Vetted, Fixed Cost', desc: 'One fully loaded monthly rate. No recruitment fees, no surprise costs. Every resource is background-checked and technically validated.' },
   { icon: Heart, title: 'Dedicated to Your Brand', desc: 'Your resource identifies as your employee. They wear your badge, learn your culture, and work exclusively for you.' },
@@ -97,6 +96,7 @@ const faqs = [
 ];
 
 const siblingLinks = [
+  { to: '/solutions/hospitality', icon: UtensilsCrossed, label: 'Hospitality IT', desc: 'POS, networking, and 24/7 support for restaurants' },
   { to: '/solutions/nationwide-dispatching', icon: Truck, label: 'Nationwide Dispatching', desc: '200+ technicians coast to coast' },
   { to: '/solutions/office-support', icon: Headphones, label: 'Office Tech Support', desc: 'Flat-rate support for your headquarters' },
   { to: '/solutions/retail', icon: Monitor, label: 'Retail IT', desc: 'Technology support for retail brands' },
@@ -115,13 +115,15 @@ export default function DedicatedResources() {
       />
 
       {/* ── Section 1: Hero ── */}
-      <section style={{
-        position: 'relative',
-        overflow: 'hidden',
-        background: DARK_HERO,
-        padding: 'clamp(120px, 12vw, 160px) 0 clamp(64px, 8vw, 96px)',
-      }}>
-        <div style={DOT_OVERLAY} />
+      <section
+        className="dot-pattern"
+        style={{
+          position: 'relative',
+          overflow: 'hidden',
+          background: 'var(--dark-hero)',
+          padding: 'clamp(120px, 12vw, 160px) 0 clamp(64px, 8vw, 96px)',
+        }}
+      >
         <div style={{
           position: 'absolute', top: '-20%', left: '-10%', width: 600, height: 600,
           background: 'radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%)',
@@ -144,17 +146,10 @@ export default function DedicatedResources() {
               variants={fadeDown}
               initial="hidden"
               animate="visible"
-              style={{ color: '#fff', marginBottom: 24, fontFamily: FONT_HEADING }}
+              style={{ color: '#fff', marginBottom: 24 }}
             >
               Your IT Team,{' '}
-              <span style={{
-                background: 'linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}>
-                Our Payroll.
-              </span>
+              <span className="gradient-text">Our Payroll.</span>
             </motion.h1>
 
             <motion.p
@@ -162,16 +157,26 @@ export default function DedicatedResources() {
               variants={fadeUp}
               initial="hidden"
               animate="visible"
-              style={{ color: 'rgba(255,255,255,0.7)', maxWidth: 640, margin: '0 auto', fontFamily: FONT_BODY, lineHeight: 1.6 }}
+              style={{ color: 'rgba(255,255,255,0.7)', maxWidth: 640, margin: '0 auto 36px', lineHeight: 1.6 }}
             >
               Expand your IT department without the HR headache.
             </motion.p>
+
+            <motion.div
+              variants={scaleIn}
+              initial="hidden"
+              animate="visible"
+            >
+              <Link to="/contact" className="btn btn-primary-lg">
+                Get a Custom Quote
+              </Link>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* ── Section 2: Value Proposition ── */}
-      <section className="section" style={{ background: '#fff' }}>
+      {/* ── Section 2: Problem Agitation ── */}
+      <section className="section" style={{ background: 'var(--card-bg)' }}>
         <div className="container">
           <motion.div
             className="section-header"
@@ -180,8 +185,53 @@ export default function DedicatedResources() {
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
-            <h2 style={{ fontFamily: FONT_HEADING }}>A Dedicated Resource, Not a Contractor</h2>
-            <p style={{ fontFamily: FONT_BODY }}>The talent you need without the overhead you don't</p>
+            <h2>Hiring IT Talent Is Slow, Expensive, and Risky</h2>
+            <p>The traditional staffing model is broken for growing brands</p>
+          </motion.div>
+
+          <motion.div
+            className="grid-3"
+            style={{ maxWidth: 1040, margin: '0 auto' }}
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            {painPoints.map((item) => (
+              <motion.div
+                key={item.title}
+                variants={staggerItem}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 12,
+                  padding: 28,
+                  background: 'var(--alt-bg)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 14,
+                }}
+              >
+                <item.icon size={24} color="var(--primary)" strokeWidth={2} />
+                <h4 style={{ fontWeight: 700, fontSize: 17 }}>{item.title}</h4>
+                <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.7 }}>{item.desc}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── Section 3: Value Proposition ── */}
+      <section className="section section-alt">
+        <div className="container">
+          <motion.div
+            className="section-header"
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+          >
+            <h2>A Dedicated Resource, Not a Contractor</h2>
+            <p>The talent you need without the overhead you don't</p>
           </motion.div>
           <motion.div
             className="grid-2"
@@ -195,7 +245,16 @@ export default function DedicatedResources() {
               <CardTilt key={item.title}>
                 <motion.div
                   variants={staggerItem}
-                  style={{ display: 'flex', gap: 20, alignItems: 'flex-start', height: '100%', padding: 24, background: '#fff', border: '1px solid #E5E7EB', borderRadius: 14 }}
+                  style={{
+                    display: 'flex',
+                    gap: 20,
+                    alignItems: 'flex-start',
+                    height: '100%',
+                    padding: 24,
+                    background: 'var(--card-bg)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 14,
+                  }}
                 >
                   <div style={{
                     flexShrink: 0,
@@ -208,11 +267,11 @@ export default function DedicatedResources() {
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                    <item.icon size={24} color={PRIMARY} strokeWidth={2} />
+                    <item.icon size={24} color="var(--primary)" strokeWidth={2} />
                   </div>
                   <div>
-                    <h4 style={{ fontFamily: FONT_HEADING, fontWeight: 700, fontSize: 17, marginBottom: 8 }}>{item.title}</h4>
-                    <p style={{ color: '#737373', fontSize: 14, lineHeight: 1.6, fontFamily: FONT_BODY }}>{item.desc}</p>
+                    <h4 style={{ fontWeight: 700, fontSize: 17, marginBottom: 8 }}>{item.title}</h4>
+                    <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.6 }}>{item.desc}</p>
                   </div>
                 </motion.div>
               </CardTilt>
@@ -221,8 +280,8 @@ export default function DedicatedResources() {
         </div>
       </section>
 
-      {/* ── Section 3: What's Included ── */}
-      <section className="section section-alt">
+      {/* ── Section 4: What's Included ── */}
+      <section className="section" style={{ background: 'var(--card-bg)' }}>
         <div className="container">
           <motion.div
             className="section-header"
@@ -231,18 +290,25 @@ export default function DedicatedResources() {
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
-            <h2 style={{ fontFamily: FONT_HEADING }}>What's Included</h2>
-            <p style={{ fontFamily: FONT_BODY }}>Everything you need from day one</p>
+            <h2>What's Included</h2>
+            <p>Everything you need from day one</p>
           </motion.div>
 
           <motion.div
-            style={{ maxWidth: 640, margin: '0 auto' }}
+            style={{
+              maxWidth: 640,
+              margin: '0 auto',
+              background: 'var(--alt-bg)',
+              border: '1px solid var(--border)',
+              borderRadius: 14,
+              padding: '8px 0',
+            }}
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
           >
-            {included.map((item, i) => (
+            {included.map((item) => (
               <motion.div
                 key={item}
                 variants={fadeLeft}
@@ -250,34 +316,30 @@ export default function DedicatedResources() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 16,
-                  padding: '16px 20px',
-                  background: '#fff',
-                  border: '1px solid #DAE0E8',
-                  borderRadius: 12,
-                  marginBottom: i < included.length - 1 ? 12 : 0,
+                  padding: '14px 24px',
                 }}
               >
                 <div style={{
                   flexShrink: 0,
-                  width: 28,
-                  height: 28,
+                  width: 24,
+                  height: 24,
                   borderRadius: '50%',
                   background: 'rgba(0,0,0,0.06)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
-                  <Check size={16} color={PRIMARY} strokeWidth={2.5} />
+                  <Check size={14} color="var(--primary)" strokeWidth={2.5} />
                 </div>
-                <span style={{ fontFamily: FONT_BODY, fontSize: 15, fontWeight: 500, color: '#0A0A0A' }}>{item}</span>
+                <span style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-primary)' }}>{item}</span>
               </motion.div>
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* ── Section 4: Pricing Signal — Flexible Engagement Models ── */}
-      <section className="section" style={{ background: '#fff' }}>
+      {/* ── Section 5: Flexible Engagement Models ── */}
+      <section className="section section-alt">
         <div className="container">
           <motion.div
             className="section-header"
@@ -286,8 +348,8 @@ export default function DedicatedResources() {
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
-            <h2 style={{ fontFamily: FONT_HEADING }}>Flexible Engagement Models</h2>
-            <p style={{ fontFamily: FONT_BODY }}>Right-sized IT staffing for every stage of growth</p>
+            <h2>Flexible Engagement Models</h2>
+            <p>Right-sized IT staffing for every stage of growth</p>
           </motion.div>
 
           <motion.div
@@ -307,15 +369,15 @@ export default function DedicatedResources() {
                     flexDirection: 'column',
                     gap: 16,
                     padding: 32,
-                    background: '#FAFAFA',
-                    border: '1px solid #E5E7EB',
+                    background: 'var(--card-bg)',
+                    border: '1px solid var(--border)',
                     borderRadius: 14,
                     height: '100%',
                   }}
                 >
-                  <tier.icon size={28} color={PRIMARY} strokeWidth={2} />
-                  <h4 style={{ fontFamily: FONT_HEADING, fontWeight: 700, fontSize: 18 }}>{tier.name}</h4>
-                  <p style={{ color: '#737373', fontSize: 14, lineHeight: 1.7, fontFamily: FONT_BODY, flex: 1 }}>{tier.desc}</p>
+                  <tier.icon size={28} color="var(--primary)" strokeWidth={2} />
+                  <h4 style={{ fontWeight: 700, fontSize: 18 }}>{tier.name}</h4>
+                  <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.7, flex: 1 }}>{tier.desc}</p>
                   <Link
                     to="/contact"
                     style={{
@@ -324,8 +386,7 @@ export default function DedicatedResources() {
                       gap: 6,
                       fontSize: 14,
                       fontWeight: 600,
-                      fontFamily: FONT_BODY,
-                      color: PRIMARY,
+                      color: 'var(--primary)',
                       textDecoration: 'none',
                       marginTop: 4,
                     }}
@@ -339,8 +400,8 @@ export default function DedicatedResources() {
         </div>
       </section>
 
-      {/* ── Section 5: FAQ ── */}
-      <section className="section section-alt">
+      {/* ── Section 6: FAQ ── */}
+      <section className="section" style={{ background: 'var(--card-bg)' }}>
         <div className="container">
           <motion.div
             className="section-header"
@@ -349,8 +410,8 @@ export default function DedicatedResources() {
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
-            <h2 style={{ fontFamily: FONT_HEADING }}>Frequently Asked Questions</h2>
-            <p style={{ fontFamily: FONT_BODY }}>Common questions about dedicated resource placement</p>
+            <h2>Frequently Asked Questions</h2>
+            <p>Common questions about dedicated resource placement</p>
           </motion.div>
 
           <div style={{ maxWidth: 720, margin: '0 auto' }}>
@@ -362,11 +423,12 @@ export default function DedicatedResources() {
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.2 }}
                 style={{
-                  borderBottom: '1px solid #DAE0E8',
+                  borderBottom: '1px solid var(--border)',
                 }}
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  aria-expanded={openFaq === i}
                   style={{
                     width: '100%',
                     display: 'flex',
@@ -378,10 +440,9 @@ export default function DedicatedResources() {
                     border: 'none',
                     cursor: 'pointer',
                     textAlign: 'left',
-                    fontFamily: FONT_HEADING,
                     fontWeight: 600,
                     fontSize: 16,
-                    color: PRIMARY,
+                    color: 'var(--primary)',
                   }}
                 >
                   {faq.q}
@@ -403,10 +464,9 @@ export default function DedicatedResources() {
                       style={{ overflow: 'hidden' }}
                     >
                       <p style={{
-                        fontFamily: FONT_BODY,
                         fontSize: 15,
                         lineHeight: 1.7,
-                        color: '#737373',
+                        color: 'var(--text-muted)',
                         paddingBottom: 20,
                       }}>
                         {faq.a}
@@ -420,14 +480,16 @@ export default function DedicatedResources() {
         </div>
       </section>
 
-      {/* ── Section 6: CTA ── */}
-      <section style={{
-        position: 'relative',
-        overflow: 'hidden',
-        background: DARK_HERO,
-        padding: 'clamp(64px, 8vw, 96px) 0',
-      }}>
-        <div style={DOT_OVERLAY} />
+      {/* ── Section 7: CTA ── */}
+      <section
+        className="dot-pattern"
+        style={{
+          position: 'relative',
+          overflow: 'hidden',
+          background: 'var(--dark-hero)',
+          padding: 'clamp(64px, 8vw, 96px) 0',
+        }}
+      >
         <div style={{
           position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
           width: 500, height: 500,
@@ -442,26 +504,19 @@ export default function DedicatedResources() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
-            style={{ color: '#fff', fontFamily: FONT_HEADING, marginBottom: 20 }}
+            style={{ color: '#fff', marginBottom: 20 }}
           >
             Scale Your Team{' '}
-            <span style={{
-              background: 'linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}>
-              Today
-            </span>
+            <span className="gradient-text">Today</span>
           </motion.h2>
           <motion.p
             variants={fadeUp}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
-            style={{ color: 'rgba(255,255,255,0.7)', fontSize: 18, maxWidth: 560, margin: '0 auto 36px', fontFamily: FONT_BODY, lineHeight: 1.6 }}
+            style={{ color: 'rgba(255,255,255,0.7)', fontSize: 18, maxWidth: 560, margin: '0 auto 36px', lineHeight: 1.6 }}
           >
-            Get a dedicated IT resource embedded in your brand — without the hiring overhead.
+            Dedicated IT talent on our payroll, embedded in your brand. No recruiting. No overhead.
           </motion.p>
           <motion.div
             variants={scaleIn}
@@ -474,8 +529,8 @@ export default function DedicatedResources() {
         </div>
       </section>
 
-      {/* ── Section 7: Cross-Navigation ── */}
-      <section className="section" style={{ background: '#fff' }}>
+      {/* ── Section 8: Cross-Navigation ── */}
+      <section className="section" style={{ background: 'var(--card-bg)' }}>
         <div className="container">
           <motion.div
             className="section-header"
@@ -484,13 +539,13 @@ export default function DedicatedResources() {
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
-            <h2 style={{ fontFamily: FONT_HEADING }}>Explore More Solutions</h2>
-            <p style={{ fontFamily: FONT_BODY }}>See how SpecGravity supports every layer of your IT operation</p>
+            <h2>Explore More Solutions</h2>
+            <p>See how SpecGravity supports every layer of your IT operation</p>
           </motion.div>
 
           <motion.div
-            className="grid-3"
-            style={{ maxWidth: 960, margin: '0 auto' }}
+            className="grid-4"
+            style={{ maxWidth: 1040, margin: '0 auto' }}
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
@@ -500,33 +555,22 @@ export default function DedicatedResources() {
               <motion.div key={link.to} variants={staggerItem}>
                 <Link
                   to={link.to}
+                  className="card"
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
+                    alignItems: 'center',
                     gap: 12,
-                    padding: 28,
-                    background: '#FAFAFA',
-                    border: '1px solid #E5E7EB',
-                    borderRadius: 14,
+                    textAlign: 'center',
                     textDecoration: 'none',
-                    color: 'inherit',
-                    transition: 'border-color 0.2s, box-shadow 0.2s',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = '#C4C4C4';
-                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.06)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = '#E5E7EB';
-                    e.currentTarget.style.boxShadow = 'none';
+                    padding: 28,
                   }}
                 >
-                  <link.icon size={24} color={PRIMARY} strokeWidth={2} />
-                  <h4 style={{ fontFamily: FONT_HEADING, fontWeight: 700, fontSize: 17 }}>{link.label}</h4>
-                  <p style={{ color: '#737373', fontSize: 14, lineHeight: 1.5, fontFamily: FONT_BODY, margin: 0 }}>{link.desc}</p>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 600, fontFamily: FONT_BODY, color: PRIMARY, marginTop: 4 }}>
-                    Learn more <ArrowRight size={14} strokeWidth={2} />
+                  <link.icon size={28} color="var(--primary)" strokeWidth={1.5} />
+                  <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+                    {link.label}
                   </span>
+                  <ArrowRight size={16} color="var(--text-muted)" strokeWidth={2} />
                 </Link>
               </motion.div>
             ))}

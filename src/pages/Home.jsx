@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -18,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useScrollAnimation, useCounter } from '../hooks/useScrollAnimation';
 import { logoRow1, logoRow2, testimonials } from '../data/clients';
+import { logoUrl } from '../utils/logoUrl';
 import {
   fadeUp,
   fadeDown,
@@ -172,28 +174,65 @@ function SolutionCard({ item, index }) {
   );
 }
 
-function LogoItem({ name }) {
+function LogoItem({ name, domain }) {
+  const [imgFailed, setImgFailed] = useState(false);
+
   return (
     <div
       style={{
         flexShrink: 0,
-        padding: '12px 24px',
+        padding: '10px 24px',
         background: '#fff',
         border: '1px solid var(--border)',
         borderRadius: 8,
-        fontWeight: 600,
-        color: 'var(--text-muted)',
-        fontSize: 14,
-        fontFamily: "'Inter', sans-serif",
-        opacity: 0.4,
-        transition: 'opacity 0.3s ease',
+        opacity: 0.65,
+        transition: 'opacity 0.3s ease, transform 0.3s ease',
         whiteSpace: 'nowrap',
         userSelect: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 56,
+        minWidth: 140,
       }}
-      onMouseEnter={e => { e.currentTarget.style.opacity = '1'; }}
-      onMouseLeave={e => { e.currentTarget.style.opacity = '0.4'; }}
+      onMouseEnter={e => {
+        e.currentTarget.style.opacity = '1';
+        e.currentTarget.style.transform = 'scale(1.04)';
+        const img = e.currentTarget.querySelector('img');
+        if (img) img.style.filter = 'grayscale(0)';
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.opacity = '0.65';
+        e.currentTarget.style.transform = 'scale(1)';
+        const img = e.currentTarget.querySelector('img');
+        if (img) img.style.filter = 'grayscale(1)';
+      }}
     >
-      {name}
+      {!imgFailed && domain ? (
+        <img
+          src={logoUrl(domain, { theme: 'light', size: 128 })}
+          alt={name}
+          loading="lazy"
+          onError={() => setImgFailed(true)}
+          style={{
+            height: 36,
+            maxWidth: 140,
+            objectFit: 'contain',
+            display: 'block',
+            filter: 'grayscale(1)',
+            transition: 'filter 0.3s ease',
+          }}
+        />
+      ) : (
+        <span style={{
+          fontWeight: 600,
+          color: 'var(--text-muted)',
+          fontSize: 14,
+          fontFamily: "'Inter', sans-serif",
+        }}>
+          {name}
+        </span>
+      )}
     </div>
   );
 }
@@ -330,8 +369,8 @@ export default function Home() {
             display: 'flex', gap: 16, width: 'max-content',
             animation: 'marqueeLeft 40s linear infinite',
           }}>
-            {[...logoRow1, ...logoRow1, ...logoRow1, ...logoRow1].map((name, i) => (
-              <LogoItem key={`r1-${i}`} name={name} />
+            {[...logoRow1, ...logoRow1, ...logoRow1, ...logoRow1].map((item, i) => (
+              <LogoItem key={`r1-${i}`} name={item.name} domain={item.domain} />
             ))}
           </div>
         </div>
@@ -346,8 +385,8 @@ export default function Home() {
             display: 'flex', gap: 16, width: 'max-content',
             animation: 'marqueeRight 40s linear infinite',
           }}>
-            {[...logoRow2, ...logoRow2, ...logoRow2, ...logoRow2].map((name, i) => (
-              <LogoItem key={`r2-${i}`} name={name} />
+            {[...logoRow2, ...logoRow2, ...logoRow2, ...logoRow2].map((item, i) => (
+              <LogoItem key={`r2-${i}`} name={item.name} domain={item.domain} />
             ))}
           </div>
         </div>

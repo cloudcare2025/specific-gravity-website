@@ -1,27 +1,27 @@
 export const clients = [
-  { name: "Saxbys Coffee", categories: ["Hospitality"] },
-  { name: "Lowe's", categories: ["Retail"] },
-  { name: "Bloomingdale's", categories: ["Retail"] },
-  { name: "NY & Company", categories: ["Retail"] },
-  { name: "Philz Coffee", categories: ["Hospitality"] },
-  { name: "Altitude Trampoline Park", categories: ["Hospitality", "Retail"] },
-  { name: "Juiceland", categories: ["Hospitality"] },
-  { name: "Pat LaFrieda", categories: ["Hospitality"] },
-  { name: "Kellogg's NYC", categories: ["Hospitality"] },
-  { name: "Aurify Brands", categories: ["Hospitality"] },
-  { name: "Tim Hortons", categories: ["Hospitality", "Support"] },
-  { name: "Johnson & Johnson", categories: ["Support"] },
-  { name: "Five Guys", categories: ["Hospitality", "Rollout"] },
-  { name: "Burger King", categories: ["Hospitality", "Rollout"] },
-  { name: "Revlon", categories: ["Retail", "Support"] },
-  { name: "Forman Mills", categories: ["Retail", "Tech Dispatch"] },
-  { name: "OnRye", categories: ["Hospitality"] },
-  { name: "Boston Baking", categories: ["Hospitality"] },
-  { name: "Fields Good Chicken", categories: ["Hospitality"] },
-  { name: "Roche Bobois", categories: ["Retail"] },
-  { name: "Angela's", categories: ["Retail"] },
-  { name: "Fred's", categories: ["Retail", "Tech Dispatch"] },
-  { name: "The Little Beet Table", categories: ["Hospitality"] },
+  { name: "Saxbys Coffee", domain: "saxbyscoffee.com", categories: ["Hospitality"] },
+  { name: "Lowe's", domain: "lowes.com", categories: ["Retail"] },
+  { name: "Bloomingdale's", domain: "bloomingdales.com", categories: ["Retail"] },
+  { name: "NY & Company", domain: "nyandcompany.com", categories: ["Retail"] },
+  { name: "Philz Coffee", domain: "philzcoffee.com", categories: ["Hospitality"] },
+  { name: "Altitude Trampoline Park", domain: null, categories: ["Hospitality", "Retail"] },
+  { name: "Juiceland", domain: null, categories: ["Hospitality"] },
+  { name: "Pat LaFrieda", domain: null, categories: ["Hospitality"] },
+  { name: "Kellogg's NYC", domain: "kelloggs.com", categories: ["Hospitality"] },
+  { name: "Aurify Brands", domain: "aurifybrands.com", categories: ["Hospitality"] },
+  { name: "Tim Hortons", domain: "timhortons.com", categories: ["Hospitality", "Support"] },
+  { name: "Johnson & Johnson", domain: "jnj.com", categories: ["Support"] },
+  { name: "Five Guys", domain: "fiveguys.com", categories: ["Hospitality", "Rollout"] },
+  { name: "Burger King", domain: "burgerking.com", categories: ["Hospitality", "Rollout"] },
+  { name: "Revlon", domain: "revlon.com", categories: ["Retail", "Support"] },
+  { name: "Forman Mills", domain: "formanmills.com", categories: ["Retail", "Tech Dispatch"] },
+  { name: "OnRye", domain: null, categories: ["Hospitality"] },
+  { name: "Boston Baking", domain: "bostonbaking.com", categories: ["Hospitality"] },
+  { name: "Fields Good Chicken", domain: "fieldsgoodchicken.com", categories: ["Hospitality"] },
+  { name: "Roche Bobois", domain: "roche-bobois.com", categories: ["Retail"] },
+  { name: "Angela's", domain: null, categories: ["Retail"] },
+  { name: "Fred's", domain: null, categories: ["Retail", "Tech Dispatch"] },
+  { name: "The Little Beet Table", domain: "thelittlebeet.com", categories: ["Hospitality"] },
 ];
 
 export const testimonials = [
@@ -45,5 +45,22 @@ export const testimonials = [
   },
 ];
 
-export const logoRow1 = ["Tim Hortons", "Johnson & Johnson", "Five Guys", "Burger King", "Lowe's", "Bloomingdale's"];
-export const logoRow2 = ["Kellogg's", "Revlon", "Philz Coffee", "Juiceland", "Saxbys", "NY & Company"];
+const domainMap = Object.fromEntries(clients.map(c => [c.name, c.domain]));
+
+export const logoRow1 = [
+  { name: "Tim Hortons", domain: domainMap["Tim Hortons"] },
+  { name: "Johnson & Johnson", domain: domainMap["Johnson & Johnson"] },
+  { name: "Five Guys", domain: domainMap["Five Guys"] },
+  { name: "Burger King", domain: domainMap["Burger King"] },
+  { name: "Lowe's", domain: domainMap["Lowe's"] },
+  { name: "Bloomingdale's", domain: domainMap["Bloomingdale's"] },
+];
+
+export const logoRow2 = [
+  { name: "Kellogg's", domain: domainMap["Kellogg's NYC"] },
+  { name: "Revlon", domain: domainMap["Revlon"] },
+  { name: "Philz Coffee", domain: domainMap["Philz Coffee"] },
+  { name: "Roche Bobois", domain: domainMap["Roche Bobois"] },
+  { name: "Saxbys", domain: domainMap["Saxbys Coffee"] },
+  { name: "NY & Company", domain: domainMap["NY & Company"] },
+];

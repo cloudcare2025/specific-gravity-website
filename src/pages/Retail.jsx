@@ -2,41 +2,92 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  CheckCircle,
   Shirt,
   Warehouse,
   Store,
   Cpu,
-  FileText,
   Package,
   ChevronDown,
   ArrowRight,
   UtensilsCrossed,
   Truck,
   Monitor,
-  Users,
+  ShieldCheck,
+  CreditCard,
+  Wifi,
+  BarChart3,
+  Wrench,
+  Clock,
+  AlertTriangle,
 } from 'lucide-react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import {
   fadeUp,
   fadeDown,
-  fadeRight,
   scaleIn,
   staggerContainer,
   staggerItem,
 } from '../animation/variants';
-import { springSnappy, springGentle, springSmooth } from '../animation/springs';
-import CardTilt from '../components/CardTilt';
+import { springSnappy, springGentle } from '../animation/springs';
 import Breadcrumbs from '../components/Breadcrumbs';
 import SEOHead from '../components/SEOHead';
 
 /* ── Data ── */
-const KEY_POINTS = [
-  'Remote and onsite technical assistance for every store',
-  'Infrastructure standardization and SOPs across all locations',
-  'Enterprise-level implementation with boutique-level attention',
-  'Compatible with any technology stack — POS, ERP, WMS',
-  'Integrates with existing help desk and ticketing systems',
+const PAIN_POINTS = [
+  {
+    icon: AlertTriangle,
+    stat: '47%',
+    label: 'of retail IT issues happen during peak hours',
+    detail:
+      'A POS outage during Black Friday or a holiday rush does not wait for a help desk ticket to be assigned.',
+  },
+  {
+    icon: Clock,
+    stat: '3.2 hrs',
+    label: 'average downtime per incident with fragmented vendors',
+    detail:
+      'When your network provider, POS vendor, and cabling contractor all point fingers, your registers stay dark.',
+  },
+  {
+    icon: CreditCard,
+    stat: '$5,600',
+    label: 'average cost of a single PCI compliance failure',
+    detail:
+      'Payment terminal firmware, network segmentation, encryption key rotation — miss one and the fines start.',
+  },
+];
+
+const CAPABILITIES = [
+  {
+    icon: Store,
+    title: 'POS Deployment & Support',
+    desc: 'Shopify POS, Lightspeed, NCR, Oracle Retail, Revel — every terminal configured, mounted, and maintained.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'PCI Compliance Management',
+    desc: 'Encryption key injection, firmware updates, network segmentation, and swap-out logistics for end-of-life hardware.',
+  },
+  {
+    icon: Wifi,
+    title: 'Network & Connectivity',
+    desc: 'Guest Wi-Fi segmentation, structured cabling, ISP coordination, and firewall management across every location.',
+  },
+  {
+    icon: BarChart3,
+    title: 'Inventory & Back-Office Systems',
+    desc: 'ERP integrations, barcode scanner deployment, receipt printer setup, and back-office workstation configuration.',
+  },
+  {
+    icon: CreditCard,
+    title: 'Payment Terminal Management',
+    desc: 'End-to-end payment hardware lifecycle — procurement, configuration, PCI-compliant deployment, and ongoing maintenance.',
+  },
+  {
+    icon: Wrench,
+    title: 'Loss Prevention Technology',
+    desc: 'IP camera systems, DVR/NVR infrastructure, EAS integrations, and segmented VLANs for security traffic.',
+  },
 ];
 
 const TIMELINE = [
@@ -53,7 +104,6 @@ const CATEGORIES = [
   { icon: Warehouse, label: 'Big Box' },
   { icon: Store, label: 'Boutique' },
   { icon: Cpu, label: 'Electronics' },
-  { icon: FileText, label: 'Licensing' },
   { icon: Package, label: 'Wholesale' },
 ];
 
@@ -61,12 +111,12 @@ const CLIENT_NAMES = [
   "Lowe's",
   "Bloomingdale's",
   'NY & Company',
-  'Altitude',
-  "Angela's",
   'Roche Bobois',
   'Revlon',
-  "Fred's",
   'Forman Mills',
+  'Altitude',
+  "Angela's",
+  "Fred's",
 ];
 
 const FAQ_DATA = [
@@ -92,11 +142,40 @@ const FAQ_DATA = [
   },
 ];
 
+const DIFFERENTIATORS = [
+  {
+    title: 'One Vendor, Every Location',
+    desc: 'Stop juggling five vendors per store. One point of contact for cabling, POS, network, security, and ongoing support — nationwide.',
+  },
+  {
+    title: 'Retail-Hours Support',
+    desc: 'Your stores are open nights, weekends, and holidays. So is our help desk. Escalation paths built for floor managers, not IT directors.',
+  },
+  {
+    title: 'Standardization at Scale',
+    desc: 'We create a technology playbook for your brand, then replicate it exactly across 5 locations or 500. Consistent experience, every store.',
+  },
+];
+
 const SIBLING_SOLUTIONS = [
-  { label: 'Hospitality', path: '/solutions/hospitality', icon: UtensilsCrossed },
-  { label: 'Nationwide Dispatching', path: '/solutions/nationwide-dispatching', icon: Truck },
-  { label: 'Office Tech Support', path: '/solutions/office-support', icon: Monitor },
-  { label: 'Dedicated Resources', path: '/solutions/dedicated-resources', icon: Users },
+  {
+    label: 'Hospitality',
+    path: '/solutions/hospitality',
+    icon: UtensilsCrossed,
+    desc: 'POS, kitchen displays, and guest Wi-Fi for restaurants and hotels.',
+  },
+  {
+    label: 'Nationwide Dispatching',
+    path: '/solutions/nationwide-dispatching',
+    icon: Truck,
+    desc: 'On-demand technicians in any market, any timeline.',
+  },
+  {
+    label: 'Office Tech Support',
+    path: '/solutions/office-support',
+    icon: Monitor,
+    desc: 'Managed IT for corporate offices, conference rooms, and remote teams.',
+  },
 ];
 
 /* ── FAQ Accordion Item ── */
@@ -168,10 +247,12 @@ function FAQItem({ question, answer, isOpen, onToggle }) {
 
 /* ── Component ── */
 export default function Retail() {
-  const [supportRef, supportVis] = useScrollAnimation(0.2);
+  const [painRef, painVis] = useScrollAnimation(0.15);
+  const [capRef, capVis] = useScrollAnimation(0.15);
   const [buildRef, buildVis] = useScrollAnimation(0.15);
   const [catRef, catVis] = useScrollAnimation(0.2);
-  const [logoRef, logoVis] = useScrollAnimation(0.2);
+  const [trustRef, trustVis] = useScrollAnimation(0.2);
+  const [diffRef, diffVis] = useScrollAnimation(0.2);
   const [faqRef, faqVis] = useScrollAnimation(0.15);
   const [pricingRef, pricingVis] = useScrollAnimation(0.2);
   const [navRef, navVis] = useScrollAnimation(0.2);
@@ -201,13 +282,13 @@ export default function Retail() {
         </div>
       </div>
 
-      {/* ════════ 1. HERO — Centered with Full-Width Accent Bar ════════ */}
+      {/* ════════ 1. HERO ════════ */}
       <section
         className="dot-pattern"
         style={{
           background: 'var(--dark-hero)',
           color: '#fff',
-          padding: '64px 0 0',
+          padding: '64px 0 100px',
           overflow: 'hidden',
         }}
       >
@@ -216,10 +297,26 @@ export default function Retail() {
           style={{
             position: 'relative',
             zIndex: 1,
-            textAlign: 'center',
-            paddingBottom: 80,
+            maxWidth: 720,
+            margin: '0 auto',
           }}
         >
+          <motion.p
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 13,
+              fontWeight: 600,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              color: 'var(--accent)',
+              marginBottom: 16,
+            }}
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+          >
+            Retail IT Solutions
+          </motion.p>
           <motion.h1
             className="display-xl"
             style={{
@@ -233,7 +330,9 @@ export default function Retail() {
             animate="visible"
             variants={fadeDown}
           >
-            IT Support Built for Retail
+            Your Stores Stay Open.
+            <br />
+            Your Technology Should Too.
           </motion.h1>
           <motion.p
             style={{
@@ -242,15 +341,15 @@ export default function Retail() {
               fontWeight: 500,
               color: 'rgba(255,255,255,0.65)',
               lineHeight: 1.6,
-              maxWidth: 600,
-              margin: '0 auto 36px',
+              marginBottom: 36,
+              maxWidth: 560,
             }}
             initial="hidden"
             animate="visible"
             variants={fadeUp}
           >
-            Boutique to big box. Apparel to electronics. We handle your
-            technology so you can handle your customers.
+            POS systems, payment terminals, network infrastructure, and loss
+            prevention technology — managed across every location by one team.
           </motion.p>
           <motion.div
             initial="hidden"
@@ -262,86 +361,178 @@ export default function Retail() {
             </Link>
           </motion.div>
         </div>
-
-        {/* Full-width accent gradient bar */}
-        <motion.div
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={springSmooth}
-          style={{
-            height: 4,
-            background:
-              'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 20%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.15) 80%, transparent 100%)',
-            transformOrigin: 'center',
-          }}
-        />
       </section>
 
-      {/* ════════ 2. GENERAL RETAIL SUPPORT ════════ */}
-      <section className="section" ref={supportRef}>
+      {/* ════════ 2. PROBLEM AGITATION ════════ */}
+      <section className="section" ref={painRef}>
         <div className="container">
-          <div style={{ maxWidth: 720, margin: '0 auto' }}>
-            <motion.div
-              initial="hidden"
-              animate={supportVis ? 'visible' : 'hidden'}
-              variants={fadeRight}
-            >
-              <h2
-                style={{
-                  marginBottom: 28,
-                  fontFamily: "'Sora', sans-serif",
-                  fontWeight: 700,
-                  letterSpacing: '-0.02em',
-                  lineHeight: 1.1,
-                }}
-              >
-                Comprehensive Retail Technology Support
-              </h2>
-            </motion.div>
-            <motion.div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 20,
-              }}
-              initial="hidden"
-              animate={supportVis ? 'visible' : 'hidden'}
-              variants={staggerContainer}
-            >
-              {KEY_POINTS.map((pt, i) => (
-                <motion.div
-                  key={i}
+          <motion.div
+            className="section-header"
+            initial="hidden"
+            animate={painVis ? 'visible' : 'hidden'}
+            variants={fadeUp}
+          >
+            <h2>The Real Cost of Fragmented Retail IT</h2>
+            <p>
+              Every vendor finger-pointing session is a register not ringing.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="grid-3"
+            initial="hidden"
+            animate={painVis ? 'visible' : 'hidden'}
+            variants={staggerContainer}
+          >
+            {PAIN_POINTS.map(({ icon: Icon, stat, label, detail }) => (
+              <motion.div key={label} variants={staggerItem}>
+                <div
                   style={{
-                    display: 'flex',
-                    gap: 14,
-                    alignItems: 'flex-start',
+                    padding: 32,
+                    borderRadius: 'var(--radius-lg)',
+                    border: '1px solid var(--border)',
+                    background: 'var(--card-bg)',
+                    height: '100%',
                   }}
-                  variants={staggerItem}
                 >
-                  <CheckCircle
-                    size={22}
-                    style={{ flexShrink: 0, color: 'var(--primary)', marginTop: 2 }}
+                  <Icon
+                    size={24}
+                    color="var(--text-muted)"
+                    strokeWidth={1.5}
+                    style={{ marginBottom: 16 }}
                   />
-                  <span
+                  <div
+                    style={{
+                      fontFamily: "'Sora', sans-serif",
+                      fontSize: 32,
+                      fontWeight: 700,
+                      color: 'var(--text-primary)',
+                      letterSpacing: '-0.02em',
+                      lineHeight: 1,
+                      marginBottom: 8,
+                    }}
+                  >
+                    {stat}
+                  </div>
+                  <div
                     style={{
                       fontFamily: "'Inter', sans-serif",
-                      fontSize: 16,
-                      fontWeight: 500,
+                      fontSize: 15,
+                      fontWeight: 600,
                       color: 'var(--text-primary)',
+                      lineHeight: 1.4,
+                      marginBottom: 12,
+                    }}
+                  >
+                    {label}
+                  </div>
+                  <p
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 14,
+                      fontWeight: 500,
+                      color: 'var(--text-muted)',
                       lineHeight: 1.6,
                     }}
                   >
-                    {pt}
-                  </span>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
+                    {detail}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
-      {/* ════════ 3. RETAIL BUILDOUT ════════ */}
-      <section className="section section-alt" ref={buildRef}>
+      {/* ════════ 3. CAPABILITIES — 2-Column Grid ════════ */}
+      <section className="section section-alt" ref={capRef}>
+        <div className="container">
+          <motion.div
+            className="section-header"
+            initial="hidden"
+            animate={capVis ? 'visible' : 'hidden'}
+            variants={fadeUp}
+          >
+            <h2>Everything Your Stores Need. One Partner.</h2>
+            <p>
+              Remote and onsite support for every system in every location.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="retail-cap-grid"
+            initial="hidden"
+            animate={capVis ? 'visible' : 'hidden'}
+            variants={staggerContainer}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr',
+              gap: 20,
+              maxWidth: 900,
+              margin: '0 auto',
+            }}
+          >
+            {CAPABILITIES.map(({ icon: Icon, title, desc }) => (
+              <motion.div key={title} variants={staggerItem}>
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: 20,
+                    alignItems: 'flex-start',
+                    padding: 28,
+                    borderRadius: 'var(--radius-lg)',
+                    border: '1px solid var(--border)',
+                    background: 'var(--card-bg)',
+                  }}
+                >
+                  <div
+                    style={{
+                      flexShrink: 0,
+                      width: 48,
+                      height: 48,
+                      borderRadius: 12,
+                      background: 'var(--alt-bg)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Icon size={22} color="var(--primary)" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <div
+                      style={{
+                        fontFamily: "'Sora', sans-serif",
+                        fontSize: 16,
+                        fontWeight: 700,
+                        color: 'var(--text-primary)',
+                        letterSpacing: '-0.01em',
+                        marginBottom: 6,
+                      }}
+                    >
+                      {title}
+                    </div>
+                    <p
+                      style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: 14,
+                        fontWeight: 500,
+                        color: 'var(--text-muted)',
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      {desc}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ════════ 4. NEW STORE BUILDOUT TIMELINE ════════ */}
+      <section className="section" ref={buildRef}>
         <div className="container">
           <motion.div
             className="section-header"
@@ -423,8 +614,8 @@ export default function Retail() {
         </div>
       </section>
 
-      {/* ════════ 4. RETAIL CATEGORIES ════════ */}
-      <section className="section" ref={catRef}>
+      {/* ════════ 5. RETAIL VERTICALS ════════ */}
+      <section className="section section-alt" ref={catRef}>
         <div className="container">
           <motion.div
             className="section-header"
@@ -432,95 +623,176 @@ export default function Retail() {
             animate={catVis ? 'visible' : 'hidden'}
             variants={fadeUp}
           >
-            <h2>Industries We Serve</h2>
-            <p>Proven playbooks for every retail vertical.</p>
+            <h2>Retail Verticals We Serve</h2>
+            <p>Proven playbooks for every retail format.</p>
           </motion.div>
 
           <motion.div
-            className="grid-3"
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              gap: 16,
+              maxWidth: 680,
+              margin: '0 auto',
+            }}
             initial="hidden"
             animate={catVis ? 'visible' : 'hidden'}
             variants={staggerContainer}
           >
             {CATEGORIES.map(({ icon: Icon, label }) => (
               <motion.div key={label} variants={staggerItem}>
-                <CardTilt maxTilt={6}>
-                  <div
-                    className="card"
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: '12px 24px',
+                    borderRadius: 'var(--radius-pill)',
+                    border: '1px solid var(--border)',
+                    background: 'var(--card-bg)',
+                  }}
+                >
+                  <Icon size={18} color="var(--primary)" strokeWidth={1.5} />
+                  <span
                     style={{
-                      textAlign: 'center',
-                      padding: 32,
-                      cursor: 'default',
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 14,
+                      fontWeight: 600,
+                      color: 'var(--text-primary)',
                     }}
                   >
-                    <Icon size={36} color="var(--primary)" strokeWidth={1.5} />
-                    <div
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                        fontSize: 15,
-                        fontWeight: 600,
-                        color: 'var(--text-primary)',
-                        marginTop: 14,
-                      }}
-                    >
-                      {label}
-                    </div>
-                  </div>
-                </CardTilt>
+                    {label}
+                  </span>
+                </div>
               </motion.div>
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* ════════ 5. CLIENT LOGOS ════════ */}
-      <section className="section section-alt" ref={logoRef}>
+      {/* ════════ 6. TRUST BAR — Client Names ════════ */}
+      <section className="section" ref={trustRef}>
+        <div className="container">
+          <motion.div
+            initial="hidden"
+            animate={trustVis ? 'visible' : 'hidden'}
+            variants={fadeUp}
+            style={{ textAlign: 'center' }}
+          >
+            <p
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 13,
+                fontWeight: 600,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                color: 'var(--text-muted)',
+                marginBottom: 32,
+              }}
+            >
+              Trusted by Leading Retail Brands
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            animate={trustVis ? 'visible' : 'hidden'}
+            variants={staggerContainer}
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              gap: 12,
+              maxWidth: 800,
+              margin: '0 auto',
+            }}
+          >
+            {CLIENT_NAMES.map((name) => (
+              <motion.div
+                key={name}
+                variants={staggerItem}
+                style={{
+                  padding: '14px 32px',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--border)',
+                  background: 'var(--card-bg)',
+                  fontFamily: "'Sora', sans-serif",
+                  fontSize: 15,
+                  fontWeight: 600,
+                  color: 'var(--text-primary)',
+                  whiteSpace: 'nowrap',
+                  letterSpacing: '-0.01em',
+                }}
+              >
+                {name}
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ════════ 7. DIFFERENTIATORS ════════ */}
+      <section className="section section-alt" ref={diffRef}>
         <div className="container">
           <motion.div
             className="section-header"
             initial="hidden"
-            animate={logoVis ? 'visible' : 'hidden'}
+            animate={diffVis ? 'visible' : 'hidden'}
             variants={fadeUp}
           >
-            <h2>Trusted by Leading Retail Brands</h2>
+            <h2>Why Retail Brands Choose Us</h2>
           </motion.div>
 
-          <div style={{ overflow: 'hidden', width: '100%' }}>
-            <div
-              className="retail-marquee"
-              style={{
-                display: 'flex',
-                gap: 16,
-                width: 'max-content',
-              }}
-            >
-              {[...CLIENT_NAMES, ...CLIENT_NAMES].map((name, i) => (
-                <span
-                  key={i}
+          <motion.div
+            className="grid-3"
+            initial="hidden"
+            animate={diffVis ? 'visible' : 'hidden'}
+            variants={staggerContainer}
+          >
+            {DIFFERENTIATORS.map(({ title, desc }) => (
+              <motion.div key={title} variants={staggerItem}>
+                <div
                   style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '10px 28px',
-                    borderRadius: 9999,
-                    background: 'var(--card-bg)',
+                    padding: 32,
+                    borderRadius: 'var(--radius-lg)',
                     border: '1px solid var(--border)',
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 14,
-                    fontWeight: 600,
-                    color: 'var(--text-primary)',
-                    whiteSpace: 'nowrap',
+                    background: 'var(--card-bg)',
+                    height: '100%',
                   }}
                 >
-                  {name}
-                </span>
-              ))}
-            </div>
-          </div>
+                  <h3
+                    style={{
+                      fontFamily: "'Sora', sans-serif",
+                      fontSize: 18,
+                      fontWeight: 700,
+                      color: 'var(--text-primary)',
+                      letterSpacing: '-0.02em',
+                      marginBottom: 12,
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    {title}
+                  </h3>
+                  <p
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 14,
+                      fontWeight: 500,
+                      color: 'var(--text-muted)',
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    {desc}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
-      {/* ════════ 6. FAQ ════════ */}
+      {/* ════════ 8. FAQ ════════ */}
       <section className="section" ref={faqRef}>
         <div className="container">
           <motion.div
@@ -553,7 +825,7 @@ export default function Retail() {
         </div>
       </section>
 
-      {/* ════════ 7. PRICING SIGNAL ════════ */}
+      {/* ════════ 9. PRICING SIGNAL ════════ */}
       <section className="section section-alt" ref={pricingRef}>
         <div className="container" style={{ textAlign: 'center' }}>
           <motion.div
@@ -566,7 +838,7 @@ export default function Retail() {
             }}
           >
             <h2 style={{ marginBottom: 16 }}>
-              Custom Plans for Your Brand's Needs
+              Priced for Your Store Count, Not a Template
             </h2>
             <p
               style={{
@@ -578,18 +850,18 @@ export default function Retail() {
                 marginBottom: 32,
               }}
             >
-              Whether you run 5 locations or 500, we structure support around
-              your store count, tech stack, and seasonal peaks — not a
-              one-size-fits-all contract.
+              Whether you operate 5 boutiques or 500 big-box locations, we
+              structure support around your store count, technology stack, and
+              seasonal peaks.
             </p>
             <Link to="/contact" className="btn btn-primary-lg">
-              Get a Custom Quote
+              Get a Free IT Assessment
             </Link>
           </motion.div>
         </div>
       </section>
 
-      {/* ════════ 8. CTA ════════ */}
+      {/* ════════ 10. CTA ════════ */}
       <section
         className="section dot-pattern"
         style={{
@@ -609,7 +881,7 @@ export default function Retail() {
               letterSpacing: '-0.02em',
               lineHeight: 1.1,
               color: '#fff',
-              marginBottom: 32,
+              marginBottom: 16,
             }}
             initial="hidden"
             whileInView="visible"
@@ -618,6 +890,24 @@ export default function Retail() {
           >
             Ready to Modernize Your Retail IT?
           </motion.h2>
+          <motion.p
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 16,
+              fontWeight: 500,
+              color: 'rgba(255,255,255,0.55)',
+              lineHeight: 1.6,
+              maxWidth: 480,
+              margin: '0 auto 32px',
+            }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.5 }}
+            variants={fadeUp}
+          >
+            One conversation. No obligation. We will map your current technology
+            and show you exactly where we can help.
+          </motion.p>
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -625,13 +915,13 @@ export default function Retail() {
             variants={scaleIn}
           >
             <Link to="/contact" className="btn btn-primary-lg">
-              Get Started
+              Get a Free IT Assessment
             </Link>
           </motion.div>
         </div>
       </section>
 
-      {/* ════════ 9. CROSS-NAVIGATION ════════ */}
+      {/* ════════ 11. CROSS-NAVIGATION ════════ */}
       <section className="section" ref={navRef} style={{ background: 'var(--card-bg)' }}>
         <div className="container">
           <motion.div
@@ -644,12 +934,12 @@ export default function Retail() {
           </motion.div>
 
           <motion.div
-            className="grid-4"
+            className="grid-3"
             initial="hidden"
             animate={navVis ? 'visible' : 'hidden'}
             variants={staggerContainer}
           >
-            {SIBLING_SOLUTIONS.map(({ label, path, icon: Icon }) => (
+            {SIBLING_SOLUTIONS.map(({ label, path, icon: Icon, desc }) => (
               <motion.div key={path} variants={staggerItem}>
                 <Link
                   to={path}
@@ -657,28 +947,40 @@ export default function Retail() {
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'center',
                     gap: 12,
-                    textAlign: 'center',
                     textDecoration: 'none',
                     padding: 28,
+                    height: '100%',
                   }}
                 >
-                  <Icon size={28} color="var(--primary)" strokeWidth={1.5} />
+                  <Icon size={24} color="var(--primary)" strokeWidth={1.5} />
                   <span
                     style={{
-                      fontFamily: "'Inter', sans-serif",
-                      fontSize: 15,
-                      fontWeight: 600,
+                      fontFamily: "'Sora', sans-serif",
+                      fontSize: 16,
+                      fontWeight: 700,
                       color: 'var(--text-primary)',
+                      letterSpacing: '-0.01em',
                     }}
                   >
                     {label}
                   </span>
+                  <p
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 14,
+                      fontWeight: 500,
+                      color: 'var(--text-muted)',
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    {desc}
+                  </p>
                   <ArrowRight
                     size={16}
                     color="var(--text-muted)"
                     strokeWidth={2}
+                    style={{ marginTop: 'auto' }}
                   />
                 </Link>
               </motion.div>
@@ -689,15 +991,10 @@ export default function Retail() {
 
       {/* ── Responsive overrides ── */}
       <style>{`
-        @keyframes retailMarquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .retail-marquee {
-          animation: retailMarquee 28s linear infinite;
-        }
-        .retail-marquee:hover {
-          animation-play-state: paused;
+        @media (min-width: 768px) {
+          .retail-cap-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
         }
       `}</style>
     </>

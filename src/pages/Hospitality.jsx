@@ -3,58 +3,63 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   CheckCircle,
-  UtensilsCrossed,
-  Zap,
-  Coffee,
-  Utensils,
-  Wine,
-  Building,
   ChevronDown,
   ArrowRight,
   Store,
   Truck,
   Monitor,
-  Users,
+  AlertTriangle,
+  Clock,
+  DollarSign,
+  Shield,
 } from 'lucide-react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import {
   fadeUp,
   fadeDown,
   fadeLeft,
-  fadeRight,
   scaleIn,
   staggerContainer,
   staggerItem,
 } from '../animation/variants';
 import { springSnappy, springGentle } from '../animation/springs';
-import CardTilt from '../components/CardTilt';
 import Breadcrumbs from '../components/Breadcrumbs';
 import SEOHead from '../components/SEOHead';
 
 /* ── Data ── */
+
+const PAIN_POINTS = [
+  {
+    icon: AlertTriangle,
+    title: 'POS goes down during Friday dinner rush',
+    desc: 'Your staff scrambles. Orders back up. Guests walk out. You call a generic IT vendor who has never seen a kitchen.',
+  },
+  {
+    icon: Clock,
+    title: 'New location opens in 6 weeks',
+    desc: 'The GC is asking about data drops. The ISP won\'t commit to a date. Nobody owns the technology timeline.',
+  },
+  {
+    icon: DollarSign,
+    title: 'Three vendors, three invoices, zero accountability',
+    desc: 'One company for cabling, another for POS, a third for the network. When something breaks, they all point at each other.',
+  },
+];
+
 const KEY_POINTS = [
-  'Reduce support costs while freeing internal resources for strategy',
-  'Works with brands that have no IT department — or supplements existing teams',
-  'Technology agnostic: integrates with Meraki, Toast POS, any existing stack',
-  'No required hardware or software upgrades',
+  'Single point of contact for POS, network, cabling, and ongoing support',
+  'Restaurant-trained technicians available 24/7 — including holidays',
+  'Technology agnostic: Toast, Square, Aloha, Meraki, any existing stack',
+  'No required hardware or software purchases — we work with what you have',
 ];
 
 const TIMELINE = [
-  'Assess kitchen workflow, POS layout, and front-of-house connectivity needs',
-  'Coordinate with architects and GCs on data, AV, and power placement',
-  'Procure and pre-configure POS terminals, KDS units, and networking gear',
-  'Manage ISP installation, guest Wi-Fi segmentation, and VPN setup',
-  'Install and terminate structured cabling across BOH and FOH',
-  'Full system burn-in: POS test orders, KDS routing, and payment processing verification',
-];
-
-const VERTICALS = [
-  { icon: UtensilsCrossed, label: 'Fast Casual' },
-  { icon: Zap, label: 'QSR' },
-  { icon: Coffee, label: 'Coffee Shops' },
-  { icon: Utensils, label: 'Full-Service Restaurants' },
-  { icon: Wine, label: 'Bars & Nightlife' },
-  { icon: Building, label: 'Hotels & Resorts' },
+  { step: 'Assess', desc: 'Kitchen workflow, POS layout, and front-of-house connectivity audit' },
+  { step: 'Plan', desc: 'Coordinate with architects and GCs on data, AV, and power placement' },
+  { step: 'Procure', desc: 'Source and pre-configure POS terminals, KDS units, and networking gear' },
+  { step: 'Connect', desc: 'ISP installation, guest Wi-Fi segmentation, and VPN setup' },
+  { step: 'Build', desc: 'Structured cabling across BOH and FOH, installed and terminated' },
+  { step: 'Verify', desc: 'Full burn-in: test orders, KDS routing, and payment processing validation' },
 ];
 
 const CLIENT_NAMES = [
@@ -68,6 +73,13 @@ const CLIENT_NAMES = [
   'OnRye',
   'Boston Baking',
   'Fields Good Chicken',
+];
+
+const STATS = [
+  { value: '500+', label: 'Restaurant locations supported' },
+  { value: '24/7', label: 'Help desk coverage' },
+  { value: '<15 min', label: 'Average response time' },
+  { value: '99.9%', label: 'POS uptime across clients' },
 ];
 
 const FAQ_DATA = [
@@ -88,26 +100,36 @@ const FAQ_DATA = [
     a: 'We create a standardized technology playbook for your brand, then replicate it across every new location. One vendor managing ISP procurement, cabling, POS setup, and final turnup — so your openings stay on schedule.',
   },
   {
-    q: 'Do you provide 24/7 support for restaurant hours?',
+    q: 'Do you provide support during restaurant hours?',
     a: 'Restaurants do not run 9 to 5, and neither do we. Our help desk operates around the clock with restaurant-trained technicians who understand the urgency of a down POS terminal during a dinner rush.',
   },
 ];
 
 const SIBLING_SOLUTIONS = [
-  { label: 'Retail', path: '/solutions/retail', icon: Store },
-  { label: 'Nationwide Dispatching', path: '/solutions/nationwide-dispatching', icon: Truck },
-  { label: 'Office Tech Support', path: '/solutions/office-support', icon: Monitor },
-  { label: 'Dedicated Resources', path: '/solutions/dedicated-resources', icon: Users },
+  {
+    label: 'Retail',
+    path: '/solutions/retail',
+    icon: Store,
+    desc: 'POS, inventory, and payment infrastructure for retail stores.',
+  },
+  {
+    label: 'Nationwide Dispatching',
+    path: '/solutions/nationwide-dispatching',
+    icon: Truck,
+    desc: 'On-site technicians dispatched anywhere in the country.',
+  },
+  {
+    label: 'Office Tech Support',
+    path: '/solutions/office-support',
+    icon: Monitor,
+    desc: 'Help desk, network, and endpoint management for offices.',
+  },
 ];
 
 /* ── FAQ Accordion Item ── */
 function FAQItem({ question, answer, isOpen, onToggle }) {
   return (
-    <div
-      style={{
-        borderBottom: '1px solid var(--border)',
-      }}
-    >
+    <div style={{ borderBottom: '1px solid var(--border)' }}>
       <button
         onClick={onToggle}
         aria-expanded={isOpen}
@@ -121,7 +143,6 @@ function FAQItem({ question, answer, isOpen, onToggle }) {
           border: 'none',
           cursor: 'pointer',
           textAlign: 'left',
-          fontFamily: "'Inter', sans-serif",
           fontSize: 17,
           fontWeight: 600,
           color: 'var(--text-primary)',
@@ -149,7 +170,6 @@ function FAQItem({ question, answer, isOpen, onToggle }) {
           >
             <p
               style={{
-                fontFamily: "'Inter', sans-serif",
                 fontSize: 15,
                 fontWeight: 500,
                 color: 'var(--text-muted)',
@@ -169,10 +189,10 @@ function FAQItem({ question, answer, isOpen, onToggle }) {
 
 /* ── Component ── */
 export default function Hospitality() {
+  const [painRef, painVis] = useScrollAnimation(0.15);
   const [supportRef, supportVis] = useScrollAnimation(0.2);
   const [buildRef, buildVis] = useScrollAnimation(0.15);
-  const [vertRef, vertVis] = useScrollAnimation(0.2);
-  const [logoRef, logoVis] = useScrollAnimation(0.2);
+  const [proofRef, proofVis] = useScrollAnimation(0.2);
   const [faqRef, faqVis] = useScrollAnimation(0.15);
   const [pricingRef, pricingVis] = useScrollAnimation(0.2);
   const [navRef, navVis] = useScrollAnimation(0.2);
@@ -202,7 +222,7 @@ export default function Hospitality() {
         </div>
       </div>
 
-      {/* ════════ 1. HERO — Asymmetric Layout ════════ */}
+      {/* ════════ 1. HERO — Clean text, single CTA ════════ */}
       <section
         className="dot-pattern"
         style={{
@@ -214,229 +234,196 @@ export default function Hospitality() {
       >
         <div
           className="container"
-          style={{
-            position: 'relative',
-            zIndex: 1,
-            display: 'grid',
-            gridTemplateColumns: '1fr',
-            gap: 48,
-            alignItems: 'center',
-          }}
+          style={{ position: 'relative', zIndex: 1 }}
         >
-          {/* Left — text */}
           <motion.div
             initial="hidden"
             animate="visible"
             variants={fadeLeft}
-            style={{ maxWidth: 640 }}
+            style={{ maxWidth: 680 }}
           >
+            <p
+              style={{
+                fontSize: 14,
+                fontWeight: 600,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                color: 'rgba(255,255,255,0.4)',
+                marginBottom: 16,
+              }}
+            >
+              Hospitality IT
+            </p>
             <h1
               className="display-xl"
               style={{
-                fontFamily: "'Sora', sans-serif",
                 fontWeight: 700,
                 letterSpacing: '-0.02em',
-                lineHeight: 1.1,
-                marginBottom: 20,
+                lineHeight: 1.08,
+                marginBottom: 24,
               }}
             >
-              IT Support Built for Restaurants
+              Your POS Went Down
+              <br />
+              <span style={{ color: 'rgba(255,255,255,0.4)' }}>During the Dinner Rush.</span>
             </h1>
             <p
               style={{
-                fontFamily: "'Inter', sans-serif",
                 fontSize: 18,
                 fontWeight: 500,
-                color: 'rgba(255,255,255,0.65)',
-                lineHeight: 1.6,
-                marginBottom: 32,
+                color: 'rgba(255,255,255,0.6)',
+                lineHeight: 1.65,
+                marginBottom: 40,
+                maxWidth: 540,
               }}
             >
-              Fast casual to full service. Coffee shops to QSR chains. We keep
-              your technology running 24/7.
+              We make sure it never happens again. 24/7 restaurant-trained IT
+              support for POS, networking, kitchen displays, and multi-unit
+              rollouts.
             </p>
             <Link to="/contact" className="btn btn-primary-lg">
-              Book a Free Assessment
+              Get Your Free Assessment
+              <ArrowRight size={18} strokeWidth={2} />
             </Link>
           </motion.div>
-
-          {/* Right — decorative gradient element */}
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={fadeRight}
-            aria-hidden="true"
-            style={{
-              position: 'relative',
-              height: 280,
-              borderRadius: 24,
-              background:
-                'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              overflow: 'hidden',
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: 16,
-              padding: 24,
-              alignItems: 'center',
-              justifyItems: 'center',
-            }}
-          >
-            {[UtensilsCrossed, Coffee, Zap, Utensils, Wine, Building].map(
-              (Icon, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, scale: 0.7 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ ...springGentle, delay: 0.3 + i * 0.08 }}
-                  style={{
-                    width: 64,
-                    height: 64,
-                    borderRadius: 16,
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Icon size={28} color="rgba(255,255,255,0.35)" strokeWidth={1.5} />
-                </motion.div>
-              )
-            )}
-            {/* Glow accent */}
-            <div
-              style={{
-                position: 'absolute',
-                top: '30%',
-                right: '-20%',
-                width: 300,
-                height: 300,
-                borderRadius: '50%',
-                background:
-                  'radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%)',
-                pointerEvents: 'none',
-              }}
-            />
-          </motion.div>
         </div>
-
-        {/* Responsive hero grid override */}
-        <style>{`
-          @media (min-width: 768px) {
-            .hosp-hero-grid {
-              grid-template-columns: 1.2fr 0.8fr !important;
-            }
-          }
-        `}</style>
       </section>
 
-      {/* ════════ 2. CENTRALIZED IT SUPPORT ════════ */}
-      <section className="section" ref={supportRef}>
+      {/* ════════ 2. PAIN AGITATION — Name the problem ════════ */}
+      <section className="section" ref={painRef}>
         <div className="container">
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr',
-              gap: 48,
-              alignItems: 'center',
-            }}
-            className="hosp-two-col"
+          <motion.div
+            className="section-header"
+            initial="hidden"
+            animate={painVis ? 'visible' : 'hidden'}
+            variants={fadeUp}
           >
-            {/* Left — text */}
-            <motion.div
-              initial="hidden"
-              animate={supportVis ? 'visible' : 'hidden'}
-              variants={fadeLeft}
-            >
-              <h2
-                style={{
-                  marginBottom: 28,
-                  fontFamily: "'Sora', sans-serif",
-                  fontWeight: 700,
-                  letterSpacing: '-0.02em',
-                  lineHeight: 1.1,
-                }}
-              >
-                One Partner for All Your Technology
-              </h2>
-              <motion.div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 20,
-                }}
-                variants={staggerContainer}
-                initial="hidden"
-                animate={supportVis ? 'visible' : 'hidden'}
-              >
-                {KEY_POINTS.map((pt, i) => (
-                  <motion.div
-                    key={i}
-                    style={{
-                      display: 'flex',
-                      gap: 14,
-                      alignItems: 'flex-start',
-                    }}
-                    variants={staggerItem}
-                  >
-                    <CheckCircle
-                      size={22}
-                      style={{ flexShrink: 0, color: 'var(--primary)', marginTop: 2 }}
-                    />
-                    <span
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                        fontSize: 16,
-                        fontWeight: 500,
-                        color: 'var(--text-primary)',
-                        lineHeight: 1.6,
-                      }}
-                    >
-                      {pt}
-                    </span>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </motion.div>
+            <h2>Sound Familiar?</h2>
+            <p>These are the problems restaurant operators tell us about every week.</p>
+          </motion.div>
 
-            {/* Right — icon grid */}
-            <motion.div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: 16,
-              }}
-              initial="hidden"
-              animate={supportVis ? 'visible' : 'hidden'}
-              variants={staggerContainer}
-            >
-              {[UtensilsCrossed, Coffee, Zap, Utensils].map((Icon, i) => (
-                <motion.div
-                  key={i}
-                  variants={scaleIn}
+          <motion.div
+            className="grid-3"
+            initial="hidden"
+            animate={painVis ? 'visible' : 'hidden'}
+            variants={staggerContainer}
+          >
+            {PAIN_POINTS.map(({ icon: Icon, title, desc }) => (
+              <motion.div
+                key={title}
+                variants={staggerItem}
+                className="card"
+                style={{ cursor: 'default' }}
+              >
+                <div
                   style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 'var(--radius-md)',
+                    background: 'var(--alt-bg)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '100%',
-                    aspectRatio: '1',
-                    borderRadius: 16,
-                    background:
-                      'linear-gradient(135deg, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.03) 100%)',
-                    border: '1px solid var(--border)',
+                    marginBottom: 20,
                   }}
                 >
-                  <Icon size={36} color="var(--primary)" strokeWidth={1.5} />
+                  <Icon size={24} color="var(--text-primary)" strokeWidth={1.5} />
+                </div>
+                <h3
+                  style={{
+                    fontSize: 17,
+                    fontWeight: 700,
+                    color: 'var(--text-primary)',
+                    lineHeight: 1.3,
+                    marginBottom: 10,
+                  }}
+                >
+                  {title}
+                </h3>
+                <p
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 500,
+                    color: 'var(--text-muted)',
+                    lineHeight: 1.65,
+                  }}
+                >
+                  {desc}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ════════ 3. THE SOLUTION — Key Points ════════ */}
+      <section className="section section-alt" ref={supportRef}>
+        <div className="container">
+          <motion.div
+            initial="hidden"
+            animate={supportVis ? 'visible' : 'hidden'}
+            variants={fadeLeft}
+            style={{ maxWidth: 640 }}
+          >
+            <h2 style={{ marginBottom: 12 }}>
+              One Partner. Every Location. All Your Technology.
+            </h2>
+            <p
+              style={{
+                fontSize: 16,
+                fontWeight: 500,
+                color: 'var(--text-muted)',
+                lineHeight: 1.65,
+                marginBottom: 36,
+                maxWidth: 560,
+              }}
+            >
+              Stop juggling vendors. We replace the chaos with a single point of
+              accountability for every piece of technology in your restaurants.
+            </p>
+            <motion.div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 20,
+              }}
+              variants={staggerContainer}
+              initial="hidden"
+              animate={supportVis ? 'visible' : 'hidden'}
+            >
+              {KEY_POINTS.map((pt, i) => (
+                <motion.div
+                  key={i}
+                  style={{
+                    display: 'flex',
+                    gap: 14,
+                    alignItems: 'flex-start',
+                  }}
+                  variants={staggerItem}
+                >
+                  <CheckCircle
+                    size={22}
+                    style={{ flexShrink: 0, color: 'var(--primary)', marginTop: 2 }}
+                  />
+                  <span
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 500,
+                      color: 'var(--text-primary)',
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    {pt}
+                  </span>
                 </motion.div>
               ))}
             </motion.div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* ════════ 3. NEW STORE BUILDOUT ════════ */}
-      <section className="section section-alt" ref={buildRef}>
+      {/* ════════ 4. NEW STORE BUILDOUT TIMELINE ════════ */}
+      <section className="section" ref={buildRef}>
         <div className="container">
           <motion.div
             className="section-header"
@@ -445,7 +432,7 @@ export default function Hospitality() {
             variants={fadeDown}
           >
             <h2>New Restaurant Openings, Handled</h2>
-            <p>From lease signing to first ticket — we manage every technology milestone.</p>
+            <p>From lease signing to first ticket — every technology milestone managed.</p>
           </motion.div>
 
           <motion.div
@@ -465,11 +452,10 @@ export default function Hospitality() {
                 top: 0,
                 bottom: 0,
                 width: 2,
-                background:
-                  'linear-gradient(180deg, var(--primary) 0%, rgba(0,0,0,0.1) 100%)',
+                background: 'linear-gradient(180deg, var(--primary) 0%, var(--border) 100%)',
               }}
             />
-            {TIMELINE.map((step, i) => (
+            {TIMELINE.map(({ step, desc }, i) => (
               <motion.div
                 key={i}
                 style={{
@@ -491,8 +477,7 @@ export default function Hospitality() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontFamily: "'Sora', sans-serif",
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: 700,
                     position: 'relative',
                     zIndex: 1,
@@ -500,118 +485,130 @@ export default function Hospitality() {
                 >
                   {i + 1}
                 </div>
-                <p
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 16,
-                    fontWeight: 500,
-                    color: 'var(--text-primary)',
-                    lineHeight: 1.6,
-                    paddingTop: 8,
-                  }}
-                >
-                  {step}
-                </p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ════════ 4. HOSPITALITY VERTICALS ════════ */}
-      <section className="section" ref={vertRef}>
-        <div className="container">
-          <motion.div
-            className="section-header"
-            initial="hidden"
-            animate={vertVis ? 'visible' : 'hidden'}
-            variants={fadeUp}
-          >
-            <h2>Industries We Serve</h2>
-            <p>Deep expertise across every hospitality concept.</p>
-          </motion.div>
-
-          <motion.div
-            className="grid-3"
-            initial="hidden"
-            animate={vertVis ? 'visible' : 'hidden'}
-            variants={staggerContainer}
-          >
-            {VERTICALS.map(({ icon: Icon, label }) => (
-              <motion.div key={label} variants={staggerItem}>
-                <CardTilt maxTilt={6}>
-                  <div
-                    className="card"
+                <div style={{ paddingTop: 4 }}>
+                  <span
                     style={{
-                      textAlign: 'center',
-                      padding: 32,
-                      cursor: 'default',
+                      display: 'block',
+                      fontSize: 14,
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                      textTransform: 'uppercase',
+                      color: 'var(--text-primary)',
+                      marginBottom: 4,
                     }}
                   >
-                    <Icon size={36} color="var(--primary)" strokeWidth={1.5} />
-                    <div
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                        fontSize: 15,
-                        fontWeight: 600,
-                        color: 'var(--text-primary)',
-                        marginTop: 14,
-                      }}
-                    >
-                      {label}
-                    </div>
-                  </div>
-                </CardTilt>
+                    {step}
+                  </span>
+                  <p
+                    style={{
+                      fontSize: 15,
+                      fontWeight: 500,
+                      color: 'var(--text-muted)',
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    {desc}
+                  </p>
+                </div>
               </motion.div>
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* ════════ 5. CLIENT LOGOS ════════ */}
-      <section className="section section-alt" ref={logoRef}>
+      {/* ════════ 5. SOCIAL PROOF — Stats + Client Names ════════ */}
+      <section className="section section-alt" ref={proofRef}>
         <div className="container">
           <motion.div
             className="section-header"
             initial="hidden"
-            animate={logoVis ? 'visible' : 'hidden'}
+            animate={proofVis ? 'visible' : 'hidden'}
             variants={fadeUp}
           >
             <h2>Trusted by Leading Hospitality Brands</h2>
           </motion.div>
 
-          <div style={{ overflow: 'hidden', width: '100%' }}>
-            <div
-              className="hosp-marquee"
-              style={{
-                display: 'flex',
-                gap: 16,
-                width: 'max-content',
-              }}
-            >
-              {[...CLIENT_NAMES, ...CLIENT_NAMES].map((name, i) => (
-                <span
-                  key={i}
+          {/* Stats row */}
+          <motion.div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: 24,
+              maxWidth: 720,
+              margin: '0 auto 56px',
+            }}
+            className="hosp-stats-grid"
+            initial="hidden"
+            animate={proofVis ? 'visible' : 'hidden'}
+            variants={staggerContainer}
+          >
+            {STATS.map(({ value, label }) => (
+              <motion.div
+                key={label}
+                variants={staggerItem}
+                style={{ textAlign: 'center' }}
+              >
+                <div
                   style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '10px 28px',
-                    borderRadius: 9999,
-                    background: 'var(--card-bg)',
-                    border: '1px solid var(--border)',
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 14,
-                    fontWeight: 600,
+                    fontSize: 36,
+                    fontWeight: 800,
+                    letterSpacing: '-0.03em',
                     color: 'var(--text-primary)',
-                    whiteSpace: 'nowrap',
+                    lineHeight: 1,
+                    marginBottom: 6,
                   }}
                 >
-                  {name}
-                </span>
-              ))}
-            </div>
-          </div>
+                  {value}
+                </div>
+                <div
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 500,
+                    color: 'var(--text-muted)',
+                  }}
+                >
+                  {label}
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Client names — static grid, not marquee */}
+          <motion.div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              gap: 12,
+              maxWidth: 680,
+              margin: '0 auto',
+            }}
+            initial="hidden"
+            animate={proofVis ? 'visible' : 'hidden'}
+            variants={staggerContainer}
+          >
+            {CLIENT_NAMES.map((name) => (
+              <motion.span
+                key={name}
+                variants={staggerItem}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '10px 24px',
+                  borderRadius: 'var(--radius-pill)',
+                  background: 'var(--card-bg)',
+                  border: '1px solid var(--border)',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: 'var(--text-primary)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {name}
+              </motion.span>
+            ))}
+          </motion.div>
         </div>
       </section>
 
@@ -648,7 +645,7 @@ export default function Hospitality() {
         </div>
       </section>
 
-      {/* ════════ 7. PRICING SIGNAL ════════ */}
+      {/* ════════ 7. PRICING SIGNAL — Specific value anchors ════════ */}
       <section className="section section-alt" ref={pricingRef}>
         <div className="container" style={{ textAlign: 'center' }}>
           <motion.div
@@ -660,31 +657,64 @@ export default function Hospitality() {
               margin: '0 auto',
             }}
           >
-            <h2 style={{ marginBottom: 16 }}>
-              Custom Plans for Your Brand's Needs
-            </h2>
+            <h2 style={{ marginBottom: 16 }}>Pricing That Scales With You</h2>
             <p
               style={{
-                fontFamily: "'Inter', sans-serif",
                 fontSize: 16,
                 fontWeight: 500,
                 color: 'var(--text-muted)',
-                lineHeight: 1.6,
-                marginBottom: 32,
+                lineHeight: 1.65,
+                marginBottom: 28,
               }}
             >
-              Every hospitality brand operates differently. We build support
-              packages around your unit count, tech stack, and growth roadmap —
-              not the other way around.
+              Plans are built around your unit count, support hours, and
+              technology stack. Most restaurant groups start between $500 and
+              $2,500 per location per month depending on scope.
             </p>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+                alignItems: 'center',
+                marginBottom: 36,
+              }}
+            >
+              {[
+                'No long-term contracts required',
+                'Month-to-month flexibility for seasonal concepts',
+                'Volume discounts for 10+ locations',
+              ].map((line) => (
+                <div
+                  key={line}
+                  style={{
+                    display: 'flex',
+                    gap: 10,
+                    alignItems: 'center',
+                  }}
+                >
+                  <Shield size={16} color="var(--text-muted)" strokeWidth={2} />
+                  <span
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 500,
+                      color: 'var(--text-muted)',
+                    }}
+                  >
+                    {line}
+                  </span>
+                </div>
+              ))}
+            </div>
             <Link to="/contact" className="btn btn-primary-lg">
-              Get a Custom Quote
+              Get Your Free Assessment
+              <ArrowRight size={18} strokeWidth={2} />
             </Link>
           </motion.div>
         </div>
       </section>
 
-      {/* ════════ 8. CTA ════════ */}
+      {/* ════════ 8. FINAL CTA ════════ */}
       <section
         className="section dot-pattern"
         style={{
@@ -699,20 +729,37 @@ export default function Hospitality() {
           <motion.h2
             className="display-lg"
             style={{
-              fontFamily: "'Sora', sans-serif",
               fontWeight: 700,
               letterSpacing: '-0.02em',
               lineHeight: 1.1,
               color: '#fff',
-              marginBottom: 32,
+              marginBottom: 16,
             }}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.5 }}
             variants={fadeUp}
           >
-            Ready to Simplify Your Restaurant Tech?
+            Stop Losing Revenue to Downtime
           </motion.h2>
+          <motion.p
+            style={{
+              fontSize: 17,
+              fontWeight: 500,
+              color: 'rgba(255,255,255,0.5)',
+              lineHeight: 1.6,
+              marginBottom: 36,
+              maxWidth: 480,
+              margin: '0 auto 36px',
+            }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.5 }}
+            variants={fadeUp}
+          >
+            Talk to a hospitality IT specialist. No sales pitch — just an
+            honest assessment of your technology gaps.
+          </motion.p>
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -720,13 +767,14 @@ export default function Hospitality() {
             variants={scaleIn}
           >
             <Link to="/contact" className="btn btn-primary-lg">
-              Book a Demo
+              Get Your Free Assessment
+              <ArrowRight size={18} strokeWidth={2} />
             </Link>
           </motion.div>
         </div>
       </section>
 
-      {/* ════════ 9. CROSS-NAVIGATION ════════ */}
+      {/* ════════ 9. CROSS-NAVIGATION — 3 links max ════════ */}
       <section className="section" ref={navRef} style={{ background: 'var(--card-bg)' }}>
         <div className="container">
           <motion.div
@@ -739,12 +787,12 @@ export default function Hospitality() {
           </motion.div>
 
           <motion.div
-            className="grid-4"
+            className="grid-3"
             initial="hidden"
             animate={navVis ? 'visible' : 'hidden'}
             variants={staggerContainer}
           >
-            {SIBLING_SOLUTIONS.map(({ label, path, icon: Icon }) => (
+            {SIBLING_SOLUTIONS.map(({ label, path, icon: Icon, desc }) => (
               <motion.div key={path} variants={staggerItem}>
                 <Link
                   to={path}
@@ -752,28 +800,36 @@ export default function Hospitality() {
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'center',
                     gap: 12,
-                    textAlign: 'center',
                     textDecoration: 'none',
                     padding: 28,
                   }}
                 >
-                  <Icon size={28} color="var(--primary)" strokeWidth={1.5} />
+                  <Icon size={24} color="var(--primary)" strokeWidth={1.5} />
                   <span
                     style={{
-                      fontFamily: "'Inter', sans-serif",
-                      fontSize: 15,
+                      fontSize: 16,
                       fontWeight: 600,
                       color: 'var(--text-primary)',
                     }}
                   >
                     {label}
                   </span>
+                  <span
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 500,
+                      color: 'var(--text-muted)',
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    {desc}
+                  </span>
                   <ArrowRight
                     size={16}
                     color="var(--text-muted)"
                     strokeWidth={2}
+                    style={{ marginTop: 'auto' }}
                   />
                 </Link>
               </motion.div>
@@ -782,25 +838,12 @@ export default function Hospitality() {
         </div>
       </section>
 
-      {/* ── Responsive overrides (no inline <style> in markup sections) ── */}
+      {/* ── Responsive overrides ── */}
       <style>{`
-        .hosp-two-col {
-          grid-template-columns: 1fr !important;
-        }
         @media (min-width: 768px) {
-          .hosp-two-col {
-            grid-template-columns: 1.1fr 0.9fr !important;
+          .hosp-stats-grid {
+            grid-template-columns: repeat(4, 1fr) !important;
           }
-        }
-        @keyframes hospMarquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .hosp-marquee {
-          animation: hospMarquee 30s linear infinite;
-        }
-        .hosp-marquee:hover {
-          animation-play-state: paused;
         }
       `}</style>
     </>

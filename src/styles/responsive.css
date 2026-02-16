@@ -1,0 +1,212 @@
+/* ============================================================
+   RESPONSIVE SYSTEM — Specific Gravity
+   Breakpoints:  640 | 768 | 1024 | 1440
+   Uses mobile-first min-width queries plus container queries
+   for component-level adaptation.
+   ============================================================ */
+
+
+/* ----------------------------------------------------------
+   0. BASE / MOBILE-FIRST DEFAULTS  (< 640 px)
+   ---------------------------------------------------------- */
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--space-4);            /* 16 px */
+  container-type: inline-size;               /* enable @container */
+  container-name: layout;
+}
+
+/* Grids — single column on small screens */
+.grid-2,
+.grid-3,
+.grid-4 {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: 1fr;
+}
+
+/* Section spacing fallback (clamp handles most of this) */
+.section-padding {
+  padding-block: var(--space-section, 64px);
+}
+
+/* Utility: visibility helpers */
+.hide-mobile {
+  display: none;
+}
+
+.hide-desktop {
+  display: block;
+}
+
+/* Utility: center text on small screens */
+.text-center-mobile {
+  text-align: center;
+}
+
+
+/* ----------------------------------------------------------
+   1. SM BREAKPOINT — 640 px
+   ---------------------------------------------------------- */
+
+@media (min-width: 640px) {
+  .grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+/* ----------------------------------------------------------
+   2. MD BREAKPOINT — 768 px
+   ---------------------------------------------------------- */
+
+@media (min-width: 768px) {
+  .container {
+    padding-inline: var(--space-6);          /* 24 px */
+  }
+
+  .hide-mobile {
+    display: revert;                         /* restore original display */
+  }
+
+  .text-center-mobile {
+    text-align: revert;
+  }
+
+  /* Bump fluid type lower bounds for tablets */
+  :root {
+    --text-base: clamp(0.9375rem, 0.9rem + 0.2vw, 1rem);
+  }
+}
+
+
+/* ----------------------------------------------------------
+   3. LG BREAKPOINT — 1024 px
+   ---------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .container {
+    padding-inline: var(--space-7);          /* 32 px */
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .hide-desktop {
+    display: none;
+  }
+
+  /* Wider gutter for desktop grids */
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    gap: var(--space-7);
+  }
+}
+
+
+/* ----------------------------------------------------------
+   4. XL BREAKPOINT — 1440 px
+   ---------------------------------------------------------- */
+
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-inline: var(--space-8);          /* 40 px */
+  }
+}
+
+
+/* ----------------------------------------------------------
+   5. TYPOGRAPHY RESPONSIVE ADJUSTMENTS
+   Fallbacks for browsers that don't support clamp().
+   ---------------------------------------------------------- */
+
+@supports not (font-size: clamp(1rem, 1vw, 2rem)) {
+  @media (min-width: 640px) {
+    :root {
+      --text-display: 3.5rem;
+      --text-4xl: 2.5rem;
+      --text-3xl: 2rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    :root {
+      --text-display: 4.5rem;
+      --text-4xl: 3rem;
+      --text-3xl: 2.5rem;
+    }
+  }
+}
+
+
+/* ----------------------------------------------------------
+   6. CONTAINER QUERIES — CARD COMPONENTS
+   Cards adapt to their parent container width, not viewport.
+   Requires container-type on the ancestor (.container above).
+   ---------------------------------------------------------- */
+
+/* Small container (< 400 px) — compact card layout */
+@container layout (max-width: 399px) {
+  .card,
+  .glass-card {
+    padding: var(--space-4);
+  }
+
+  .card .card-title,
+  .glass-card .card-title {
+    font-size: var(--text-base);
+  }
+
+  .card .card-body,
+  .glass-card .card-body {
+    font-size: var(--text-sm);
+  }
+}
+
+/* Medium container (400–799 px) — standard card layout */
+@container layout (min-width: 400px) and (max-width: 799px) {
+  .card,
+  .glass-card {
+    padding: var(--space-6);
+  }
+
+  .card .card-title,
+  .glass-card .card-title {
+    font-size: var(--text-lg);
+  }
+}
+
+/* Large container (800 px +) — spacious card layout */
+@container layout (min-width: 800px) {
+  .card,
+  .glass-card {
+    padding: var(--space-7);
+  }
+
+  .card .card-title,
+  .glass-card .card-title {
+    font-size: var(--text-xl);
+  }
+
+  .card .card-body,
+  .glass-card .card-body {
+    font-size: var(--text-base);
+    line-height: 1.7;
+  }
+}

@@ -1,0 +1,111 @@
+/* ============================================================
+   DESIGN TOKENS — Specific Gravity
+   Single source of truth for the entire design system.
+   All values are consumed via var(--token-name).
+   ============================================================ */
+
+:root {
+
+  /* ----------------------------------------------------------
+     COLORS
+     ---------------------------------------------------------- */
+
+  /* Accent — electric blue */
+  --accent: #2563EB;
+  --accent-hover: #1D4ED8;
+  --accent-light: rgba(37, 99, 235, 0.1);
+  --accent-glow: 0 0 20px rgba(37, 99, 235, 0.3);
+
+  /* Neutrals */
+  --primary: #1A1A1A;
+  --primary-hover: #333333;
+  --secondary: #404040;
+
+  /* Surfaces */
+  --bg: #FAFAFA;
+  --card-bg: #FFFFFF;
+  --alt-bg: #F5F5F5;
+
+  /* Text */
+  --text-primary: #0A0A0A;
+  --text-muted: #737373;
+
+  /* Borders */
+  --border: #DAE0E8;
+
+  /* ----------------------------------------------------------
+     FLUID TYPE SCALE
+     min @ 320 px  /  max @ 1440 px
+     ---------------------------------------------------------- */
+
+  --text-xs:      clamp(0.75rem,   0.7rem   + 0.25vw,  0.8rem);
+  --text-sm:      clamp(0.8125rem, 0.77rem  + 0.21vw,  0.875rem);
+  --text-base:    clamp(0.9375rem, 0.88rem  + 0.29vw,  1rem);
+  --text-lg:      clamp(1.0625rem, 0.98rem  + 0.42vw,  1.25rem);
+  --text-xl:      clamp(1.25rem,   1.1rem   + 0.75vw,  1.5rem);
+  --text-2xl:     clamp(1.5rem,    1.25rem  + 1.25vw,  2rem);
+  --text-3xl:     clamp(1.875rem,  1.5rem   + 1.875vw, 2.5rem);
+  --text-4xl:     clamp(2.25rem,   1.75rem  + 2.5vw,   3rem);
+  --text-display: clamp(3rem,      2rem     + 5vw,     4.5rem);
+
+  /* ----------------------------------------------------------
+     SPACING SCALE
+     Linear 4-px grid with larger jumps for layout spacing.
+     ---------------------------------------------------------- */
+
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-7:  32px;
+  --space-8:  40px;
+  --space-9:  48px;
+  --space-10: 64px;
+  --space-11: 80px;
+  --space-12: 96px;
+
+  /* Section-level vertical rhythm — fluid */
+  --space-section: clamp(64px, 8vw, 96px);
+
+  /* ----------------------------------------------------------
+     SHADOWS
+     Layered elevation system. Values tuned for light mode;
+     dark-mode overrides live in dark-mode.css.
+     ---------------------------------------------------------- */
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.16);
+
+  /* ----------------------------------------------------------
+     BORDER RADII
+     ---------------------------------------------------------- */
+
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-pill: 9999px;
+
+  /* ----------------------------------------------------------
+     Z-INDEX SCALE
+     Predictable stacking without magic numbers.
+     ---------------------------------------------------------- */
+
+  --z-base:     1;
+  --z-dropdown: 100;
+  --z-sticky:   200;
+  --z-overlay:  500;
+  --z-modal:    1000;
+  --z-cursor:   9999;
+
+  /* ----------------------------------------------------------
+     TRANSITIONS / EASING
+     ---------------------------------------------------------- */
+
+  --ease-out:    cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}

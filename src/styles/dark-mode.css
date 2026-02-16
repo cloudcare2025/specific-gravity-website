@@ -1,0 +1,130 @@
+/* ============================================================
+   DARK MODE — Specific Gravity
+   Two activation paths:
+     1. System preference via prefers-color-scheme (auto)
+     2. Manual toggle via .dark class on <html>
+   A .light class on :root opts out of the media-query path
+   so users can force light mode even on a dark-OS.
+   ============================================================ */
+
+
+/* ----------------------------------------------------------
+   1. SYSTEM-PREFERENCE PATH
+   Applies when the OS is dark AND the user hasn't forced light.
+   ---------------------------------------------------------- */
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+
+    /* Surfaces */
+    --bg: #0A0A0A;
+    --card-bg: #141414;
+    --alt-bg: #111111;
+
+    /* Text */
+    --text-primary: #F0F0F0;
+    --text-muted: #999999;
+
+    /* Borders */
+    --border: rgba(255, 255, 255, 0.1);
+
+    /* Neutrals — inverted for dark context */
+    --primary: #F0F0F0;
+    --primary-hover: #FFFFFF;
+    --secondary: #B0B0B0;
+
+    /* Shadows — heavier opacity on dark backgrounds */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.6);
+  }
+}
+
+
+/* ----------------------------------------------------------
+   2. MANUAL TOGGLE PATH  (.dark on <html>)
+   Mirrors the media-query overrides so JS-based toggles work.
+   ---------------------------------------------------------- */
+
+.dark {
+
+  /* Surfaces */
+  --bg: #0A0A0A;
+  --card-bg: #141414;
+  --alt-bg: #111111;
+
+  /* Text */
+  --text-primary: #F0F0F0;
+  --text-muted: #999999;
+
+  /* Borders */
+  --border: rgba(255, 255, 255, 0.1);
+
+  /* Neutrals */
+  --primary: #F0F0F0;
+  --primary-hover: #FFFFFF;
+  --secondary: #B0B0B0;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+
+/* ----------------------------------------------------------
+   3. BODY TRANSITION
+   Smooth crossfade when the theme switches at runtime.
+   ---------------------------------------------------------- */
+
+body {
+  background-color: var(--bg);
+  color: var(--text-primary);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+
+/* ----------------------------------------------------------
+   4. COMPONENT DARK OVERRIDES
+   ---------------------------------------------------------- */
+
+/* Cards */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) .card,
+  :root:not(.light) .glass-card {
+    background-color: var(--card-bg);
+    border-color: var(--border);
+  }
+
+  :root:not(.light) .glass-card {
+    backdrop-filter: blur(16px) saturate(1.2);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  }
+}
+
+.dark .card,
+.dark .glass-card {
+  background-color: var(--card-bg);
+  border-color: var(--border);
+}
+
+.dark .glass-card {
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+}
+
+
+/* Images — slight dim to reduce glare on dark surfaces */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) img {
+    filter: brightness(0.9);
+  }
+}
+
+.dark img {
+  filter: brightness(0.9);
+}
